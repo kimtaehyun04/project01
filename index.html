@@ -1002,7 +1002,198 @@
         }
 
         /* ==========================================
-           5. FOOTER & CLOSING
+           5. GUESTBOOK (나만의 한강명소 추천 - 댓글/방명록)
+           ========================================== */
+        .guestbook {
+            background-color: var(--bg-white);
+        }
+
+        .guestbook-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 48px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 992px) {
+            .guestbook-container { grid-template-columns: 1fr; }
+        }
+
+        .guestbook-form {
+            background: var(--bg-gray);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .guestbook-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .guestbook-form-row { grid-template-columns: 1fr; }
+        }
+
+        .guestbook-input,
+        .guestbook-textarea {
+            width: 100%;
+            font-family: var(--pretendard);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: var(--bg-white);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .guestbook-input:focus,
+        .guestbook-textarea:focus {
+            border-color: var(--soft-mint);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        .guestbook-textarea {
+            resize: vertical;
+            min-height: 96px;
+            line-height: 1.6;
+        }
+
+        .btn-guestbook-submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: var(--soft-mint);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-family: var(--pretendard);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-guestbook-submit:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .guestbook-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 640px; /* 초기 기본값, 렌더링 후 JS가 정확히 5개 카드 높이로 재계산 */
+            overflow-y: auto;
+            padding-right: 6px;
+            transition: max-height 0.3s ease;
+        }
+
+        .guestbook-list::-webkit-scrollbar { width: 6px; }
+        .guestbook-list::-webkit-scrollbar-thumb {
+            background-color: var(--card-border);
+            border-radius: 10px;
+        }
+
+        .guestbook-card {
+            background: var(--bg-gray);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            transition: var(--transition-smooth);
+            animation: guestbookFadeIn 0.4s ease;
+        }
+
+        @keyframes guestbookFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .guestbook-card:hover {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .guestbook-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .guestbook-card-spot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-main);
+            word-break: keep-all;
+        }
+
+        .guestbook-delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            flex-shrink: 0;
+        }
+
+        .guestbook-delete-btn:hover {
+            background-color: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+        }
+
+        .guestbook-card-message {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            word-break: keep-all;
+            margin-bottom: 14px;
+        }
+
+        .guestbook-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .guestbook-card-name {
+            font-weight: 700;
+            color: var(--hangang-blue);
+        }
+
+        .guestbook-empty {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            padding: 48px 24px;
+            background: var(--bg-gray);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--card-border);
+        }
+
+        /* ==========================================
+           6. FOOTER & CLOSING
            ========================================== */
         .footer {
             background-color: #0f172a;
@@ -1131,6 +1322,7 @@
         <a href="#curation" class="scroll-nav-item" data-tooltip="맞춤 가이드" data-nav-key="navCuration"></a>
         <a href="#spots" class="scroll-nav-item" data-tooltip="포토존 아카이브" data-nav-key="navSpots"></a>
         <a href="#tips" class="scroll-nav-item" data-tooltip="이용 팁 & 계산기" data-nav-key="navTips"></a>
+        <a href="#guestbook" class="scroll-nav-item" data-tooltip="한강 명소 추천" data-nav-key="navGuestbook"></a>
     </nav>
 
     <!-- Floating Control Panel -->
@@ -1386,7 +1578,36 @@
     </section>
 
 
-    <!-- 5. FOOTER -->
+    <!-- 5. GUESTBOOK (나만의 한강명소 추천) -->
+    <section id="guestbook" class="guestbook reveal">
+        <div class="container">
+            <span class="section-tag" data-i18n="tagGuestbook">나만의 한강명소 추천</span>
+            <h2 class="section-title" data-i18n="titleGuestbook">당신만 아는 숨은 명소를 알려주세요</h2>
+            <p class="section-desc" data-i18n="descGuestbook">다른 라이더들을 위해 나만의 한강 명소나 팁을 짧게 남겨보세요. 남긴 글은 새로고침해도 사라지지 않아요.</p>
+
+            <div class="guestbook-container">
+                <form class="guestbook-form" id="guestbook-form" onsubmit="return submitGuestbookEntry(event)">
+                    <div class="guestbook-form-row">
+                        <input type="text" id="guestbook-name" class="guestbook-input" maxlength="12" data-i18n-placeholder="gbNamePlaceholder" placeholder="닉네임" required>
+                        <input type="text" id="guestbook-spot" class="guestbook-input" maxlength="20" data-i18n-placeholder="gbSpotPlaceholder" placeholder="추천 명소 (예: 반포한강공원)" required>
+                    </div>
+                    <textarea id="guestbook-message" class="guestbook-textarea" maxlength="120" data-i18n-placeholder="gbMessagePlaceholder" placeholder="이곳을 추천하는 이유를 짧게 남겨주세요 (최대 120자)" required></textarea>
+                    <button type="submit" class="btn-guestbook-submit">
+                        <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+                        <span data-i18n="gbSubmit">등록하기</span>
+                    </button>
+                </form>
+
+                <div>
+                    <div class="guestbook-list" id="guestbook-list"></div>
+                    <p class="guestbook-empty" id="guestbook-empty" data-i18n="gbEmpty" style="display: none;">아직 등록된 명소가 없어요. 첫 번째 추천을 남겨보세요!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 6. FOOTER -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -1423,7 +1644,7 @@
 
         const i18n = {
             ko: {
-                navHome: "홈", navCuration: "맞춤 가이드", navSpots: "포토존 아카이브", navTips: "이용 팁 & 계산기",
+                navHome: "홈", navCuration: "맞춤 가이드", navSpots: "포토존 아카이브", navTips: "이용 팁 & 계산기", navGuestbook: "한강 명소 추천",
                 heroTag: "바람을 따라 만나는 서울",
                 heroDesc: "오늘 하루, 한강의 시원한 강바람 속을 달려볼까요? 연인과의 로맨틱한 노을 데이트부터 바쁜 나날 속 지친 영혼을 달래줄 나홀로 힐링 자전거 여정까지 당신의 최적 경로를 맞춤형으로 큐레이션해 드립니다.",
                 startGuide: "가이드 시작하기", checkIndex: "라이딩 적합도 확인", scrollExplore: "스크롤하여 탐색하기",
@@ -1448,10 +1669,13 @@
                 footerTagline: "\"당신의 오늘 하루가 따릉이와 함께<br>조금 더 여유롭길\"",
                 footerDesc: "바쁜 일상의 속도를 늦추고, 자전거 안장 위에 앉아야 비로소 보이는 풍경들이 있습니다. 뺨을 부드럽게 스치는 강바람과 서서히 흩어지는 붉은 노을의 여운을 타고, 서울의 새로운 매력을 고스란히 마음속 깊은 곳에 축적해 보세요.",
                 linkOfficial: "따릉이 공식 사이트", copyright: "© 2026 한강 따릉이 감성 가이드북. 모든 서울 라이더들의 여유로운 질주를 응원합니다.",
-                timeStr: "시간", distStr: "거리", diffStr: "난이도", routeSub: "한강을 완벽히 흡수하는 전용 큐레이션 경로"
+                timeStr: "시간", distStr: "거리", diffStr: "난이도", routeSub: "한강을 완벽히 흡수하는 전용 큐레이션 경로",
+                tagGuestbook: "나만의 한강명소 추천", titleGuestbook: "당신만 아는 숨은 명소를 알려주세요", descGuestbook: "다른 라이더들을 위해 나만의 한강 명소나 팁을 짧게 남겨보세요. 남긴 글은 새로고침해도 사라지지 않아요.",
+                gbNamePlaceholder: "닉네임", gbSpotPlaceholder: "추천 명소 (예: 반포한강공원)", gbMessagePlaceholder: "이곳을 추천하는 이유를 짧게 남겨주세요 (최대 120자)",
+                gbSubmit: "등록하기", gbEmpty: "아직 등록된 명소가 없어요. 첫 번째 추천을 남겨보세요!", gbDeleteConfirm: "이 추천 글을 삭제할까요?"
             },
             en: {
-                navHome: "Home", navCuration: "Curation", navSpots: "Photo Spots", navTips: "Tips & Calc",
+                navHome: "Home", navCuration: "Curation", navSpots: "Photo Spots", navTips: "Tips & Calc", navGuestbook: "Recommend Spots",
                 heroTag: "Follow the breeze, Discover Seoul",
                 heroDesc: "Shall we ride through the refreshing river breeze of Han River today? From romantic sunset dates to peaceful solo healing journeys, we curate the perfect path precisely for you.",
                 startGuide: "Start Guide", checkIndex: "Check Riding Index", scrollExplore: "Scroll to Explore",
@@ -1476,7 +1700,10 @@
                 footerTagline: "\"May your day be a little more relaxed<br>with Ttareungi\"",
                 footerDesc: "Slowing down your pace reveals views that can only be captured from a bicycle saddle. Accumulate Seoul's vibrant charm deep within your heart with the sweet river wind.",
                 linkOfficial: "Official Website", copyright: "© 2026 Han River Guidebook. Supporting every rider's peaceful journey.",
-                timeStr: "Time", distStr: "Distance", diffStr: "Difficulty", routeSub: "Dedicated curation route absorbing the essence of Han River"
+                timeStr: "Time", distStr: "Distance", diffStr: "Difficulty", routeSub: "Dedicated curation route absorbing the essence of Han River",
+                tagGuestbook: "Recommend Your Han River Spot", titleGuestbook: "Share a hidden spot only you know about", descGuestbook: "Leave a short note about your favorite Han River spot or tip for fellow riders. Your entry stays saved even after a refresh.",
+                gbNamePlaceholder: "Nickname", gbSpotPlaceholder: "Recommended spot (e.g. Banpo Hangang Park)", gbMessagePlaceholder: "Tell us why you recommend it (max 120 chars)",
+                gbSubmit: "Submit", gbEmpty: "No spots recommended yet. Be the first to share one!", gbDeleteConfirm: "Delete this recommendation?"
             }
         };
 
@@ -1571,6 +1798,12 @@
                 const key = el.getAttribute('data-nav-key');
                 if (i18n[currentLang][key]) el.setAttribute('data-tooltip', i18n[currentLang][key]);
             });
+            // 방명록 폼 placeholder 다국어 매핑
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (i18n[currentLang][key]) el.setAttribute('placeholder', i18n[currentLang][key]);
+            });
+            renderGuestbookEntries();
             startTypingEffect();
         }
 
@@ -1581,7 +1814,7 @@
             if (heroBg) heroBg.style.transform = `translateY(${scrolled * 0.4}px)`;
 
             // 실시간 스크롤 위치 기반 좌측 인디케이터 불 들어오게 하기
-            const sections = ['hero', 'curation', 'spots', 'tips'];
+            const sections = ['hero', 'curation', 'spots', 'tips', 'guestbook'];
             let currentActiveSection = 'hero';
 
             sections.forEach(id => {
@@ -1774,6 +2007,135 @@
             }
         }
 
+        // 7. 나만의 한강명소 추천 방명록 (localStorage 영구 저장)
+        const GUESTBOOK_STORAGE_KEY = 'hangang_guestbook_entries_v1';
+
+        function loadGuestbookEntries() {
+            try {
+                const raw = localStorage.getItem(GUESTBOOK_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                console.warn('방명록 데이터를 불러오지 못했습니다.', e);
+                return [];
+            }
+        }
+
+        function saveGuestbookEntries(entries) {
+            try {
+                localStorage.setItem(GUESTBOOK_STORAGE_KEY, JSON.stringify(entries));
+            } catch (e) {
+                console.warn('방명록 데이터를 저장하지 못했습니다.', e);
+            }
+        }
+
+        // XSS 방지를 위한 텍스트 이스케이프 처리
+        function escapeGuestbookText(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function renderGuestbookEntries() {
+            const listEl = document.getElementById('guestbook-list');
+            const emptyEl = document.getElementById('guestbook-empty');
+            if (!listEl) return;
+
+            const entries = loadGuestbookEntries();
+
+            if (entries.length === 0) {
+                listEl.innerHTML = '';
+                listEl.style.maxHeight = 'none';
+                if (emptyEl) emptyEl.style.display = 'block';
+                return;
+            }
+            if (emptyEl) emptyEl.style.display = 'none';
+
+            const locale = currentLang === 'ko' ? 'ko-KR' : 'en-US';
+
+            listEl.innerHTML = entries.slice().reverse().map(entry => {
+                const formattedDate = new Date(entry.timestamp).toLocaleDateString(locale, {
+                    year: 'numeric', month: '2-digit', day: '2-digit'
+                });
+                return `
+                <div class="guestbook-card" data-id="${entry.id}">
+                    <div class="guestbook-card-header">
+                        <div class="guestbook-card-spot">
+                            <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--soft-mint); flex-shrink: 0;"></i>
+                            <span>${escapeGuestbookText(entry.spot)}</span>
+                        </div>
+                        <button type="button" class="guestbook-delete-btn" onclick="deleteGuestbookEntry('${entry.id}')" aria-label="delete entry">
+                            <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
+                    <p class="guestbook-card-message">${escapeGuestbookText(entry.message)}</p>
+                    <div class="guestbook-card-footer">
+                        <span class="guestbook-card-name">${escapeGuestbookText(entry.name)}</span>
+                        <span class="guestbook-card-date">${formattedDate}</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            lucide.createIcons();
+
+            // 페이지가 무한정 길어지지 않도록, 카드 5개 높이만큼만 보여주고 그 이상은 목록 내부 스크롤 처리
+            const VISIBLE_CARD_COUNT = 5;
+            requestAnimationFrame(() => {
+                const cards = listEl.querySelectorAll('.guestbook-card');
+                if (cards.length <= VISIBLE_CARD_COUNT) {
+                    listEl.style.maxHeight = 'none';
+                    return;
+                }
+                const gapPx = parseFloat(getComputedStyle(listEl).rowGap || getComputedStyle(listEl).gap) || 16;
+                let visibleHeight = 0;
+                for (let i = 0; i < VISIBLE_CARD_COUNT; i++) {
+                    visibleHeight += cards[i].offsetHeight;
+                }
+                visibleHeight += gapPx * (VISIBLE_CARD_COUNT - 1);
+                listEl.style.maxHeight = `${visibleHeight}px`;
+            });
+        }
+
+        function submitGuestbookEntry(event) {
+            event.preventDefault();
+
+            const nameEl = document.getElementById('guestbook-name');
+            const spotEl = document.getElementById('guestbook-spot');
+            const messageEl = document.getElementById('guestbook-message');
+
+            const name = nameEl.value.trim();
+            const spot = spotEl.value.trim();
+            const message = messageEl.value.trim();
+
+            if (!name || !spot || !message) return false;
+
+            const entries = loadGuestbookEntries();
+            entries.push({
+                id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+                name: name.slice(0, 12),
+                spot: spot.slice(0, 20),
+                message: message.slice(0, 120),
+                timestamp: Date.now()
+            });
+            saveGuestbookEntries(entries);
+
+            nameEl.value = '';
+            spotEl.value = '';
+            messageEl.value = '';
+
+            renderGuestbookEntries();
+            return false;
+        }
+
+        function deleteGuestbookEntry(id) {
+            const confirmMsg = i18n[currentLang].gbDeleteConfirm || '이 추천 글을 삭제할까요?';
+            if (!window.confirm(confirmMsg)) return;
+
+            const remaining = loadGuestbookEntries().filter(entry => entry.id !== id);
+            saveGuestbookEntries(remaining);
+            renderGuestbookEntries();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             applyCardTiltEffect();
@@ -1781,6 +2143,7 @@
             startTypingEffect();
             selectCourse(1);
             calculateRidingScore();
+            renderGuestbookEntries();
         });
     </script>
 </body>
