@@ -434,7 +434,7 @@
             padding: 32px;
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--card-border);
-            transition: transform 0.1s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -575,7 +575,11 @@
         }
 
         @media (max-width: 768px) {
-            .detail-body { grid-template-columns: 1fr; }
+            .detail-body { 
+                grid-template-columns: 1fr; 
+                padding: 24px;
+                gap: 24px;
+            }
         }
 
         .route-visual-container {
@@ -698,7 +702,7 @@
             border-radius: var(--radius-md);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
-            transition: var(--transition-smooth);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
             background-color: #0f172a;
             aspect-ratio: 4 / 3;
             display: flex;
@@ -1108,11 +1112,14 @@
         }
 
         @media (max-width: 768px) {
-            .hero-title { font-size: 2.5rem; min-height: 6rem; }
-            .hero-desc { font-size: 1.1rem; }
-            section { padding: 70px 0; }
-            .section-title { font-size: 1.75rem; }
+            .hero-title { font-size: 2.2rem; min-height: 5.5rem; }
+            .hero-desc { font-size: 1rem; }
+            section { padding: 60px 0; }
+            .section-title { font-size: 1.6rem; }
             .scroll-nav { display: none; } /* 화면이 너무 작아지면 모바일 레이아웃 보호를 위해 가림 */
+            .detail-header { padding: 20px; }
+            .detail-title { font-size: 1.4rem; }
+            .calculator-widget { padding: 24px; }
         }
     </style>
 </head>
@@ -1340,7 +1347,7 @@
                         <i data-lucide="sliders-horizontal" style="color: var(--hangang-blue); width: 24px; height: 24px;"></i>
                         <span data-i18n="calcTitle">실시간 최적 라이딩 계산기</span>
                     </h3>
-                    <p class="widget-desc" data-i18n="calcDesc">현재 기온 and 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.</p>
+                    <p class="widget-desc" data-i18n="calcDesc">현재 기온과 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.</p>
                     
                     <div class="control-group">
                         <div class="control-label-wrapper">
@@ -1412,6 +1419,7 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         let currentLang = 'ko';
+        let typingTimer = null; // 타임아웃 참조 전역 변수 초기화
 
         const i18n = {
             ko: {
@@ -1595,8 +1603,11 @@
             });
         });
 
-        // 4. 3D 틸트 호버 효과 통합 적용
+        // 4. 3D 틸트 호버 효과 통합 적용 (모바일 터치 디바이스 예외 추가)
         function applyCardTiltEffect() {
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            if (isTouchDevice) return; // 모바일/터치 환경에서는 성능 향상을 위해 틸트 연산을 건너뜀
+
             const cards = document.querySelectorAll('.curation-card, .spot-card');
             cards.forEach(card => {
                 card.addEventListener('mousemove', (e) => {
@@ -1628,10 +1639,11 @@
             document.querySelectorAll('.reveal').forEach(section => observer.observe(section));
         }
 
-        // 6. 타이핑 연출 효과
-        let typingTimer;
+        // 6. 타이핑 연출 효과 (연타 버그 완벽 보정)
         function startTypingEffect() {
-            clearTimeout(typingTimer);
+            if (typingTimer) {
+                clearTimeout(typingTimer);
+            }
             const titleEl = document.getElementById('typing-title');
             if(!titleEl) return;
             const txtKo = `가장 완벽하고 싱그러운<br><span>한강 따릉이 가이드</span>`;
