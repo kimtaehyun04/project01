@@ -113,6 +113,80 @@
             color: white;
         }
 
+        /* Left Floating Scroll Navigation Bar */
+        .scroll-nav {
+            position: fixed;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 10px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-smooth);
+        }
+        [data-theme="dark"] .scroll-nav {
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .scroll-nav-item {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            background: var(--text-muted);
+            opacity: 0.5;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .scroll-nav-item:hover,
+        .scroll-nav-item.active {
+            opacity: 1;
+            background: var(--hangang-blue);
+            transform: scale(1.3);
+        }
+
+        .scroll-nav-item.active {
+            box-shadow: 0 0 8px var(--hangang-blue);
+        }
+
+        /* Tooltip text */
+        .scroll-nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%) translateX(-10px);
+            background: var(--hangang-blue-dark);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+        [data-theme="dark"] .scroll-nav-item::after {
+            background: #ffffff;
+            color: #0f172a;
+        }
+
+        .scroll-nav-item:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
         /* Container Limit */
         .container {
             max-width: 1200px;
@@ -1038,10 +1112,19 @@
             .hero-desc { font-size: 1.1rem; }
             section { padding: 70px 0; }
             .section-title { font-size: 1.75rem; }
+            .scroll-nav { display: none; } /* 화면이 너무 작아지면 모바일 레이아웃 보호를 위해 가림 */
         }
     </style>
 </head>
 <body>
+
+    <!-- Floating Left Scroll Navigation Bar -->
+    <nav class="scroll-nav">
+        <a href="#hero" class="scroll-nav-item active" data-tooltip="홈" data-nav-key="navHome"></a>
+        <a href="#curation" class="scroll-nav-item" data-tooltip="맞춤 가이드" data-nav-key="navCuration"></a>
+        <a href="#spots" class="scroll-nav-item" data-tooltip="포토존 아카이브" data-nav-key="navSpots"></a>
+        <a href="#tips" class="scroll-nav-item" data-tooltip="이용 팁 & 계산기" data-nav-key="navTips"></a>
+    </nav>
 
     <!-- Floating Control Panel -->
     <div class="control-panel">
@@ -1054,7 +1137,7 @@
     </div>
 
     <!-- 1. HERO SECTION -->
-    <header class="hero">
+    <header id="hero" class="hero">
         <div class="hero-bg-visual" id="hero-bg"></div>
         <div class="hero-content">
             <div class="hero-tagline">
@@ -1147,7 +1230,7 @@
 
 
     <!-- 3. HIDDEN SPOTS GALLERY -->
-    <section class="spots reveal">
+    <section id="spots" class="spots reveal">
         <div class="container">
             <span class="section-tag" data-i18n="tagSpots">포토존 아카이브</span>
             <h2 class="section-title" data-i18n="titleSpots">잠시 자전거를 세우고, 카메라를 켜보세요</h2>
@@ -1257,7 +1340,7 @@
                         <i data-lucide="sliders-horizontal" style="color: var(--hangang-blue); width: 24px; height: 24px;"></i>
                         <span data-i18n="calcTitle">실시간 최적 라이딩 계산기</span>
                     </h3>
-                    <p class="widget-desc" data-i18n="calcDesc">현재 기온과 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.</p>
+                    <p class="widget-desc" data-i18n="calcDesc">현재 기온 and 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.</p>
                     
                     <div class="control-group">
                         <div class="control-label-wrapper">
@@ -1332,6 +1415,7 @@
 
         const i18n = {
             ko: {
+                navHome: "홈", navCuration: "맞춤 가이드", navSpots: "포토존 아카이브", navTips: "이용 팁 & 계산기",
                 heroTag: "바람을 따라 만나는 서울",
                 heroDesc: "오늘 하루, 한강의 시원한 강바람 속을 달려볼까요? 연인과의 로맨틱한 노을 데이트부터 바쁜 나날 속 지친 영혼을 달래줄 나홀로 힐링 자전거 여정까지 당신의 최적 경로를 맞춤형으로 큐레이션해 드립니다.",
                 startGuide: "가이드 시작하기", checkIndex: "라이딩 적합도 확인", scrollExplore: "스크롤하여 탐색하기",
@@ -1359,6 +1443,7 @@
                 timeStr: "시간", distStr: "거리", diffStr: "난이도", routeSub: "한강을 완벽히 흡수하는 전용 큐레이션 경로"
             },
             en: {
+                navHome: "Home", navCuration: "Curation", navSpots: "Photo Spots", navTips: "Tips & Calc",
                 heroTag: "Follow the breeze, Discover Seoul",
                 heroDesc: "Shall we ride through the refreshing river breeze of Han River today? From romantic sunset dates to peaceful solo healing journeys, we curate the perfect path precisely for you.",
                 startGuide: "Start Guide", checkIndex: "Check Riding Index", scrollExplore: "Scroll to Explore",
@@ -1473,13 +1558,41 @@
                 const key = el.getAttribute('data-i18n');
                 if (i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key];
             });
+            // 스크롤 내비게이션 바 다국어 툴팁 매핑
+            document.querySelectorAll('[data-nav-key]').forEach(el => {
+                const key = el.getAttribute('data-nav-key');
+                if (i18n[currentLang][key]) el.setAttribute('data-tooltip', i18n[currentLang][key]);
+            });
             startTypingEffect();
         }
 
-        // 3. 스크롤 패럴랙스
+        // 3. 스크롤 패럴랙스 및 플로팅 내비게이션 활성화 연동
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
-            document.getElementById('hero-bg').style.transform = `translateY(${scrolled * 0.4}px)`;
+            const heroBg = document.getElementById('hero-bg');
+            if (heroBg) heroBg.style.transform = `translateY(${scrolled * 0.4}px)`;
+
+            // 실시간 스크롤 위치 기반 좌측 인디케이터 불 들어오게 하기
+            const sections = ['hero', 'curation', 'spots', 'tips'];
+            let currentActiveSection = 'hero';
+
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    // 섹션 상단이 화면 중간 정도 올라오면 활성화 처리
+                    if (rect.top <= window.innerHeight / 2) {
+                        currentActiveSection = id;
+                    }
+                }
+            });
+
+            document.querySelectorAll('.scroll-nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${currentActiveSection}`) {
+                    item.classList.add('active');
+                }
+            });
         });
 
         // 4. 3D 틸트 호버 효과 통합 적용
@@ -1520,6 +1633,7 @@
         function startTypingEffect() {
             clearTimeout(typingTimer);
             const titleEl = document.getElementById('typing-title');
+            if(!titleEl) return;
             const txtKo = `가장 완벽하고 싱그러운<br><span>한강 따릉이 가이드</span>`;
             const txtEn = `The Most Perfect & Fresh<br><span>Han River Bike Guide</span>`;
             const fullText = currentLang === 'ko' ? txtKo : txtEn;
