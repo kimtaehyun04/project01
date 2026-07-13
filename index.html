@@ -13,7 +13,7 @@
         :root {
             --pretendard: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
             
-            /* Color System */
+            /* Color System (Light Mode Default) */
             --hangang-blue-dark: #0f172a; /* 밤의 한강 */
             --hangang-blue: #0284c7;      /* 청량한 한강 */
             --hangang-blue-light: #f0f9ff;/* 맑은 날 한강의 연한 하늘빛 */
@@ -23,6 +23,7 @@
             --text-muted: #64748b;
             --bg-white: #ffffff;
             --bg-gray: #f8fafc;
+            --card-border: rgba(226, 232, 240, 0.8);
             
             /* Shadows & Border Radius */
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -31,6 +32,23 @@
             --radius-md: 16px;
             --radius-lg: 24px;
             --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dark Mode Override */
+        [data-theme="dark"] {
+            --hangang-blue-dark: #f8fafc;
+            --hangang-blue: #38bdf8;
+            --hangang-blue-light: #0c4a6e;
+            --soft-mint: #34d399;
+            --soft-mint-light: #064e3b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --bg-white: #1e293b;
+            --bg-gray: #0f172a;
+            --card-border: rgba(51, 65, 85, 0.8);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
         }
 
         /* Base Reset */
@@ -50,11 +68,49 @@
             background-color: var(--bg-gray);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
         }
 
         a {
             text-decoration: none;
             color: inherit;
+        }
+
+        /* Floating Controller Panel (Dark Mode & Language Toggle) */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-md);
+        }
+
+        .control-btn {
+            background: var(--bg-white);
+            color: var(--text-main);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+        .control-btn:hover {
+            transform: scale(1.1);
+            background: var(--hangang-blue);
+            color: white;
         }
 
         /* Container Limit */
@@ -64,27 +120,42 @@
             padding: 0 24px;
         }
 
-        /* Section Global Typography */
+        /* Section Global Typography & Reveal Animation */
         section {
             padding: 100px 0;
+        }
+
+        /* Entry Reveal Animation Class */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .section-tag {
             display: inline-block;
             background-color: var(--soft-mint-light);
-            color: #047857;
+            color: var(--soft-mint);
             padding: 6px 16px;
             border-radius: 50px;
             font-size: 0.875rem;
             font-weight: 600;
             margin-bottom: 16px;
+            transition: var(--transition-smooth);
+        }
+        [data-theme="dark"] .section-tag {
+            color: #34d399;
         }
 
         .section-title {
             font-size: 2.25rem;
             font-weight: 800;
             letter-spacing: -0.025em;
-            color: var(--hangang-blue-dark);
+            color: var(--text-main);
             margin-bottom: 12px;
             line-height: 1.3;
         }
@@ -97,7 +168,7 @@
         }
 
         /* ==========================================
-           1. HERO SECTION (메인 히어로)
+           1. HERO SECTION (메인 히어로 - 패럴랙스 반영)
            ========================================== */
         .hero {
             position: relative;
@@ -108,7 +179,7 @@
             justify-content: center;
             color: #ffffff;
             overflow: hidden;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(2, 132, 199, 0.7) 100%);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(2, 132, 199, 0.75) 100%);
         }
 
         /* Hero Background Visual Graphics */
@@ -117,12 +188,12 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 120%; /* 패럴랙스 여유 공간 */
             z-index: -1;
             overflow: hidden;
+            will-change: transform;
         }
 
-        /* Gradient & Grid overlay to simulate Han River and Warm Sunlight */
         .hero-bg-visual::before {
             content: '';
             position: absolute;
@@ -136,13 +207,17 @@
         /* Animated decorative waves simulating river */
         .wave {
             position: absolute;
-            bottom: 0;
+            bottom: -5px;
             left: 0;
             width: 100%;
             height: 100px;
-            background: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%23f8fafc" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,202.7C384,192,480,160,576,149.3C672,139,768,149,864,165.3C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat;
+            background: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%23f8fafc" class="wave-path" d="M0,192L48,197.3C96,203,192,213,288,202.7C384,192,480,160,576,149.3C672,139,768,149,864,165.3C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat;
             background-size: 100% 100%;
             z-index: 10;
+            transition: filter 0.3s;
+        }
+        [data-theme="dark"] .wave {
+            filter: brightness(0.095); /* 다크모드 배경색과 동기화 */
         }
 
         .hero-content {
@@ -150,13 +225,12 @@
             z-index: 5;
             padding: 0 24px;
             max-width: 800px;
-            animation: fadeIn 1s ease-out;
         }
 
         .hero-tagline {
             font-size: 1.25rem;
             font-weight: 600;
-            color: var(--soft-mint);
+            color: #34d399;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             margin-bottom: 20px;
@@ -176,6 +250,15 @@
             letter-spacing: -0.03em;
             margin-bottom: 24px;
             word-break: keep-all;
+            min-height: 8.4rem; /* 타이핑 시 덜컹거림 방지 */
+        }
+
+        /* Typing Effect Cursor */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 0.8s infinite;
+            color: #34d399;
+            margin-left: 4px;
         }
 
         .hero-title span {
@@ -217,14 +300,14 @@
         }
 
         .btn-primary {
-            background-color: var(--soft-mint);
+            background-color: #10b981;
             color: #ffffff;
             box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.4);
         }
 
         .btn-primary:hover {
             background-color: #059669;
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
             box-shadow: 0 12px 24px -8px rgba(16, 185, 129, 0.6);
         }
 
@@ -237,7 +320,7 @@
 
         .btn-secondary:hover {
             background-color: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
         }
 
         /* Scroll Down Indicator */
@@ -251,7 +334,7 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            color: var(--text-muted);
+            color: #cbd5e1;
             font-weight: 500;
             font-size: 0.9rem;
             transition: var(--transition-smooth);
@@ -265,20 +348,19 @@
             animation: bounce 2s infinite;
         }
 
-
         /* ==========================================
-           2. SITUATION CURATION (상황별 큐레이션)
+           2. SITUATION CURATION (카드 3D 호버 반영)
            ========================================== */
         .curation {
             background-color: var(--bg-gray);
         }
 
-        /* Interactive Grid Layout */
         .curation-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 24px;
             margin-bottom: 48px;
+            perspective: 1000px; /* 3D 효과 인지 거리 */
         }
 
         .curation-card {
@@ -286,14 +368,15 @@
             border-radius: var(--radius-md);
             padding: 32px;
             box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            transition: var(--transition-smooth);
+            border: 1px solid var(--card-border);
+            transition: transform 0.1s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transform-style: preserve-3d;
         }
 
         .curation-card::before {
@@ -307,11 +390,10 @@
             transition: var(--transition-smooth);
         }
 
-        /* Hover & Active States for Cards */
+        /* Hover & Active States */
         .curation-card:hover {
-            transform: translateY(-6px);
             box-shadow: var(--shadow-lg);
-            border-color: rgba(2, 132, 199, 0.2);
+            border-color: rgba(2, 132, 199, 0.4);
         }
 
         .curation-card.active {
@@ -332,20 +414,21 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 24px;
-            transition: var(--transition-smooth);
+            transform: translateZ(20px); /* 3D 요소 입체감 돌출 */
         }
 
         /* Color thematic icons */
-        .card-1 .card-icon { background-color: #ffe4e6; color: #e11d48; } /* Romantic */
-        .card-2 .card-icon { background-color: #e0f2fe; color: #0284c7; } /* Healing */
-        .card-3 .card-icon { background-color: #fef3c7; color: #d97706; } /* Picnic */
-        .card-4 .card-icon { background-color: #d1fae5; color: #059669; } /* Beginner */
+        .card-1 .card-icon { background-color: #ffe4e6; color: #e11d48; }
+        .card-2 .card-icon { background-color: #e0f2fe; color: #0284c7; }
+        .card-3 .card-icon { background-color: #fef3c7; color: #d97706; }
+        .card-4 .card-icon { background-color: #d1fae5; color: #059669; }
 
         .card-title {
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--hangang-blue-dark);
+            color: var(--text-main);
             margin-bottom: 8px;
+            transform: translateZ(15px);
         }
 
         .card-desc {
@@ -360,21 +443,24 @@
             font-weight: 600;
             padding: 4px 10px;
             border-radius: 20px;
-            background: #f1f5f9;
+            background: rgba(0,0,0,0.05);
             color: var(--text-muted);
+        }
+        [data-theme="dark"] .card-badge {
+            background: rgba(255,255,255,0.1);
         }
 
         /* Dynamic Detail Display Area */
         .course-detail-container {
             background: var(--bg-white);
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(226, 232, 240, 1);
+            border: 1px solid var(--card-border);
             box-shadow: var(--shadow-md);
             overflow: hidden;
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s ease-out;
-            display: none; /* Controlled by JS */
+            display: none;
         }
 
         .course-detail-container.show {
@@ -384,7 +470,7 @@
         }
 
         .detail-header {
-            background: linear-gradient(135deg, var(--hangang-blue-dark) 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: #ffffff;
             padding: 32px;
             display: flex;
@@ -427,18 +513,15 @@
         }
 
         @media (max-width: 768px) {
-            .detail-body {
-                grid-template-columns: 1fr;
-            }
+            .detail-body { grid-template-columns: 1fr; }
         }
 
-        /* Map and route visualization placeholders */
         .route-visual-container {
             position: relative;
             background-color: var(--hangang-blue-light);
             border-radius: var(--radius-md);
             padding: 24px;
-            border: 1px dashed rgba(2, 132, 199, 0.2);
+            border: 1px dashed rgba(2, 132, 199, 0.3);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -453,7 +536,6 @@
             position: relative;
         }
 
-        /* Stylized custom vertical route path */
         .path-step {
             display: flex;
             gap: 16px;
@@ -467,7 +549,8 @@
             top: 24px;
             bottom: -20px;
             width: 2px;
-            background-color: #cbd5e1;
+            background-color: var(--text-muted);
+            opacity: 0.3;
         }
 
         .path-dot {
@@ -494,7 +577,7 @@
         .path-content h4 {
             font-size: 1rem;
             font-weight: 700;
-            color: var(--hangang-blue-dark);
+            color: var(--text-main);
         }
 
         .path-content p {
@@ -502,7 +585,6 @@
             color: var(--text-muted);
         }
 
-        /* Route Highlights Card */
         .route-info-cards {
             display: flex;
             flex-direction: column;
@@ -526,7 +608,7 @@
             gap: 8px;
             font-size: 1.05rem;
             font-weight: 700;
-            color: var(--hangang-blue-dark);
+            color: var(--text-main);
             margin-bottom: 8px;
         }
 
@@ -536,15 +618,13 @@
             word-break: keep-all;
         }
 
-
         /* ==========================================
-           3. HIDDEN SPOTS GALLERY (히든 스팟 & 포토존)
+           3. HIDDEN SPOTS GALLERY
            ========================================== */
         .spots {
             background-color: var(--bg-white);
         }
 
-        /* Styled Grid Gallery */
         .spots-grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
@@ -557,42 +637,27 @@
             overflow: hidden;
             box-shadow: var(--shadow-sm);
             transition: var(--transition-smooth);
-            background-color: var(--hangang-blue-dark);
+            background-color: #0f172a;
             aspect-ratio: 4 / 3;
         }
 
-        /* Grid Spans for Dynamic Sizing */
-        .spot-card.large {
-            grid-column: span 7;
-        }
-
-        .spot-card.medium {
-            grid-column: span 5;
-        }
-
-        .spot-card.small {
-            grid-column: span 4;
-        }
+        .spot-card.large { grid-column: span 7; }
+        .spot-card.medium { grid-column: span 5; }
+        .spot-card.small { grid-column: span 4; }
 
         @media (max-width: 992px) {
-            .spot-card.large, .spot-card.medium, .spot-card.small {
-                grid-column: span 6;
-            }
+            .spot-card.large, .spot-card.medium, .spot-card.small { grid-column: span 6; }
         }
-
         @media (max-width: 576px) {
-            .spot-card.large, .spot-card.medium, .spot-card.small {
-                grid-column: span 12;
-            }
+            .spot-card.large, .spot-card.medium, .spot-card.small { grid-column: span 12; }
         }
 
         .spot-card:hover {
-            transform: scale(1.02);
+            transform: translateY(-8px) scale(1.01);
             box-shadow: var(--shadow-lg);
             z-index: 10;
         }
 
-        /* SVG generated Backgrounds with high aesthetic gradients as substitutes for placeholder images */
         .spot-bg {
             position: absolute;
             top: 0;
@@ -605,29 +670,12 @@
             background-position: center;
         }
 
-        /* SVG Artworks for background placeholders */
-        .spot-1 {
-            background: linear-gradient(180deg, rgba(2, 132, 199, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%),
-                        radial-gradient(circle at top right, #fecdd3, #fda4af, #f43f5e);
-        }
-        .spot-2 {
-            background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%),
-                        radial-gradient(circle at center, #fed7aa, #fdba74, #f97316);
-        }
-        .spot-3 {
-            background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%),
-                        linear-gradient(45deg, #1e1b4b, #311042, #701a75);
-        }
-        .spot-4 {
-            background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%),
-                        radial-gradient(circle at bottom left, #ccfbf1, #99f6e4, #0d9488);
-        }
-        .spot-5 {
-            background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%),
-                        linear-gradient(135deg, #172554, #1e3a8a, #3b82f6);
-        }
+        .spot-1 { background: linear-gradient(180deg, rgba(2, 132, 199, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%), radial-gradient(circle at top right, #fecdd3, #fda4af, #f43f5e); }
+        .spot-2 { background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%), radial-gradient(circle at center, #fed7aa, #fdba74, #f97316); }
+        .spot-3 { background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%), linear-gradient(45deg, #1e1b4b, #311042, #701a75); }
+        .spot-4 { background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%), radial-gradient(circle at bottom left, #ccfbf1, #99f6e4, #0d9488); }
+        .spot-5 { background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%), linear-gradient(135deg, #172554, #1e3a8a, #3b82f6); }
 
-        /* Shimmer Wave Graphic on Hover */
         .spot-card::after {
             content: '';
             position: absolute;
@@ -635,26 +683,15 @@
             left: -100%;
             width: 50%;
             height: 100%;
-            background: linear-gradient(
-                to right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.13) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.13) 50%, rgba(255, 255, 255, 0) 100%);
             transform: skewX(-25deg);
             transition: 0.75s;
             z-index: 2;
         }
 
-        .spot-card:hover::after {
-            left: 125%;
-        }
+        .spot-card:hover::after { left: 125%; }
+        .spot-card:hover .spot-bg { transform: scale(1.1); }
 
-        .spot-card:hover .spot-bg {
-            transform: scale(1.1);
-        }
-
-        /* Card Overlay Information */
         .spot-info {
             position: absolute;
             bottom: 0;
@@ -691,17 +728,14 @@
             font-size: 0.9rem;
             color: #cbd5e1;
             opacity: 0.85;
-            transition: var(--transition-smooth);
             word-break: keep-all;
         }
 
-
         /* ==========================================
-           4. TIPS & INFORMATION (실속 꿀팁 가이드)
+           4. TIPS & INFORMATION
            ========================================== */
         .tips {
             background-color: var(--bg-gray);
-            position: relative;
         }
 
         .tips-container {
@@ -712,12 +746,9 @@
         }
 
         @media (max-width: 992px) {
-            .tips-container {
-                grid-template-columns: 1fr;
-            }
+            .tips-container { grid-template-columns: 1fr; }
         }
 
-        /* Helpful Info Blocks (Accordion Style representation) */
         .tips-left {
             display: flex;
             flex-direction: column;
@@ -729,13 +760,13 @@
             border-radius: var(--radius-md);
             padding: 24px;
             box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border: 1px solid var(--card-border);
             cursor: pointer;
             transition: var(--transition-smooth);
         }
 
         .tip-accordion-item:hover {
-            border-color: rgba(16, 185, 129, 0.3);
+            border-color: rgba(16, 185, 129, 0.5);
             box-shadow: var(--shadow-md);
         }
 
@@ -745,7 +776,7 @@
             justify-content: space-between;
             font-size: 1.15rem;
             font-weight: 700;
-            color: var(--hangang-blue-dark);
+            color: var(--text-main);
         }
 
         .tip-accordion-icon-box {
@@ -762,10 +793,10 @@
         .tip-accordion-content {
             margin-top: 16px;
             padding-top: 16px;
-            border-top: 1px solid #f1f5f9;
+            border-top: 1px solid var(--card-border);
             color: var(--text-muted);
             font-size: 0.95rem;
-            display: none; /* Controlled via active class */
+            display: none;
             line-height: 1.7;
             word-break: keep-all;
         }
@@ -780,23 +811,20 @@
             color: var(--soft-mint);
         }
 
-        .tip-accordion-item.active .tip-accordion-content {
-            display: block;
-        }
+        .tip-accordion-item.active .tip-accordion-content { display: block; }
 
-        /* Interactive Timing Calculator */
         .calculator-widget {
             background: var(--bg-white);
             border-radius: var(--radius-lg);
             padding: 36px;
             box-shadow: var(--shadow-md);
-            border: 1px solid rgba(226, 232, 240, 1);
+            border: 1px solid var(--card-border);
         }
 
         .widget-title {
             font-size: 1.35rem;
             font-weight: 800;
-            color: var(--hangang-blue-dark);
+            color: var(--text-main);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -809,11 +837,7 @@
             margin-bottom: 32px;
         }
 
-        /* Sliders */
-        .control-group {
-            margin-bottom: 24px;
-        }
-
+        .control-group { margin-bottom: 24px; }
         .control-label-wrapper {
             display: flex;
             justify-content: space-between;
@@ -842,8 +866,8 @@
             -webkit-appearance: none;
             accent-color: var(--hangang-blue);
         }
+        [data-theme="dark"] .slider-input { background: #334155; }
 
-        /* Output Score Ring/Box */
         .score-output-box {
             margin-top: 36px;
             background: var(--soft-mint-light);
@@ -874,22 +898,21 @@
         .score-explanation h4 {
             font-size: 1.1rem;
             font-weight: 800;
-            color: #047857;
+            color: var(--text-main);
             margin-bottom: 4px;
         }
 
         .score-explanation p {
             font-size: 0.85rem;
-            color: #065f46;
+            color: var(--text-muted);
             word-break: keep-all;
         }
 
-
         /* ==========================================
-           5. FOOTER & CLOSING (푸터 및 감성 마무리)
+           5. FOOTER & CLOSING
            ========================================== */
         .footer {
-            background-color: var(--hangang-blue-dark);
+            background-color: #0f172a;
             color: #ffffff;
             padding: 100px 0 40px 0;
             text-align: center;
@@ -897,7 +920,6 @@
             overflow: hidden;
         }
 
-        /* Warm starry background graphics in footer */
         .footer::before {
             content: '';
             position: absolute;
@@ -905,8 +927,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 10% 20%, rgba(52, 211, 153, 0.05) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 80%, rgba(2, 132, 199, 0.08) 0%, transparent 40%);
+            background: radial-gradient(circle at 10% 20%, rgba(52, 211, 153, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(2, 132, 199, 0.08) 0%, transparent 40%);
             pointer-events: none;
         }
 
@@ -976,14 +997,11 @@
         }
 
         .btn-link.highlight {
-            background-color: var(--soft-mint);
-            border-color: var(--soft-mint);
+            background-color: #10b981;
+            border-color: #10b981;
             color: #ffffff;
         }
-
-        .btn-link.highlight:hover {
-            background-color: #059669;
-        }
+        .btn-link.highlight:hover { background-color: #059669; }
 
         .copyright {
             font-size: 0.85rem;
@@ -993,70 +1011,65 @@
         }
 
         /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes blink {
+            50% { opacity: 0; }
         }
-
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-8px); }
-            60% { transform: translateY(-4px); }
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -8px); }
+            60% { transform: translate(-50%, -4px); }
         }
 
-        /* Custom Responsive Fixes */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            .hero-desc {
-                font-size: 1.1rem;
-            }
-            section {
-                padding: 70px 0;
-            }
-            .section-title {
-                font-size: 1.75rem;
-            }
+            .hero-title { font-size: 2.5rem; min-height: 6rem; }
+            .hero-desc { font-size: 1.1rem; }
+            section { padding: 70px 0; }
+            .section-title { font-size: 1.75rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Floating Control Panel -->
+    <div class="control-panel">
+        <button class="control-btn" id="theme-toggle" onclick="toggleTheme()" title="Theme Toggle">
+            <i data-lucide="moon"></i>
+        </button>
+        <button class="control-btn" id="lang-toggle" onclick="toggleLanguage()" title="Language Toggle">
+            <span style="font-weight:800; font-size:0.85rem;">EN</span>
+        </button>
+    </div>
+
     <!-- ==========================================
        1. HERO SECTION (메인 히어로)
        ========================================== -->
     <header class="hero">
-        <div class="hero-bg-visual"></div>
+        <div class="hero-bg-visual" id="hero-bg"></div>
         <div class="hero-content">
             <div class="hero-tagline">
                 <i data-lucide="bike" style="width: 20px; height: 20px;"></i>
-                바람을 따라 만나는 서울
+                <span data-i18n="heroTag">바람을 따라 만나는 서울</span>
             </div>
-            <h1 class="hero-title">
-                가장 완벽하고 싱그러운<br>
-                <span>한강 따릉이 가이드</span>
+            <h1 class="hero-title typing-cursor" id="typing-title">
+                <!-- Javascript에서 타이핑 효과 주입 -->
             </h1>
-            <p class="hero-desc">
+            <p class="hero-desc" data-i18n="heroDesc">
                 오늘 하루, 한강의 시원한 강바람 속을 달려볼까요? 연인과의 로맨틱한 노을 데이트부터 바쁜 나날 속 지친 영혼을 달래줄 나홀로 힐링 자전거 여정까지 당신의 최적 경로를 맞춤형으로 큐레이션해 드립니다.
             </p>
             <div class="cta-group">
                 <a href="#curation" class="btn btn-primary">
-                    가이드 시작하기
+                    <span data-i18n="startGuide">가이드 시작하기</span>
                     <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
                 </a>
                 <a href="#tips" class="btn btn-secondary">
-                    라이딩 적합도 확인
+                    <span data-i18n="checkIndex">라이딩 적합도 확인</span>
                     <i data-lucide="sun" style="width: 18px; height: 18px;"></i>
                 </a>
             </div>
         </div>
-        <!-- Animated river bottom curves -->
         <div class="wave"></div>
-        
-        <!-- Animated Arrow Down -->
         <a href="#curation" class="scroll-down">
-            <span>스크롤하여 탐색하기</span>
+            <span data-i18n="scrollExplore">스크롤하여 탐색하기</span>
             <i data-lucide="chevron-down" style="width: 20px; height: 20px;"></i>
         </a>
     </header>
@@ -1064,14 +1077,13 @@
 
     <!-- ==========================================
        2. SITUATION CURATION (상황별 큐레이션)
-       ========================================== */ -->
-    <section id="curation" class="curation">
+       ========================================== -->
+    <section id="curation" class="curation reveal">
         <div class="container">
-            <span class="section-tag">상황별 맞춤 가이드</span>
-            <h2 class="section-title">오늘, 누구와 함께 한강을 달리시나요?</h2>
-            <p class="section-desc">원하시는 라이딩 분위기를 선택하세요. 최상의 경로와 함께 세심한 동반 팁을 친근하게 속삭여 드릴게요.</p>
+            <span class="section-tag" data-i18n="tagCuration">상황별 맞춤 가이드</span>
+            <h2 class="section-title" data-i18n="titleCuration">오늘, 누구와 함께 한강을 달리시나요?</h2>
+            <p class="section-desc" data-i18n="descCuration">원하시는 라이딩 분위기를 선택하세요. 최상의 경로와 함께 세심한 동반 팁을 친근하게 속삭여 드릴게요.</p>
             
-            <!-- Cards Grid Layout -->
             <div class="curation-grid">
                 <!-- Card 1 -->
                 <div class="curation-card card-1" onclick="selectCourse(1)">
@@ -1079,10 +1091,10 @@
                         <i data-lucide="heart" style="width: 28px; height: 28px;"></i>
                     </div>
                     <div>
-                        <h3 class="card-title">로맨틱 한강</h3>
-                        <p class="card-desc">연인과 함께 노을을 품으며 달리는 황홀한 데이트 최적화 경로</p>
+                        <h3 class="card-title" data-i18n="card1Title">로맨틱 한강</h3>
+                        <p class="card-desc" data-i18n="card1Desc">연인과 함께 노을을 품으며 달리는 황홀한 데이트 최적화 경로</p>
                     </div>
-                    <span class="card-badge">노을 & 야경</span>
+                    <span class="card-badge" data-i18n="card1Badge">노을 & 야경</span>
                 </div>
 
                 <!-- Card 2 -->
@@ -1091,10 +1103,10 @@
                         <i data-lucide="trees" style="width: 28px; height: 28px;"></i>
                     </div>
                     <div>
-                        <h3 class="card-title">나홀로 힐링</h3>
-                        <p class="card-desc">소란함 속에서 벗어나 한적하고 고요히 자아를 만나는 숨은 사색 코스</p>
+                        <h3 class="card-title" data-i18n="card2Title">나홀로 힐링</h3>
+                        <p class="card-desc" data-i18n="card2Desc">소란함 속에서 벗어나 한적하고 고요히 자아를 만나는 숨은 사색 코스</p>
                     </div>
-                    <span class="card-badge">조용한 힐링</span>
+                    <span class="card-badge" data-i18n="card2Badge">조용한 힐링</span>
                 </div>
 
                 <!-- Card 3 -->
@@ -1103,10 +1115,10 @@
                         <i data-lucide="sparkles" style="width: 28px; height: 28px;"></i>
                     </div>
                     <div>
-                        <h3 class="card-title">친구와 피크닉</h3>
-                        <p class="card-desc">한강 배달존 명소와 연계해 웃음 가득한 여유를 나눌 수 있는 코스</p>
+                        <h3 class="card-title" data-i18n="card3Title">친구와 피크닉</h3>
+                        <p class="card-desc" data-i18n="card3Desc">한강 배달존 명소와 연계해 웃음 가득한 여유를 나눌 수 있는 코스</p>
                     </div>
-                    <span class="card-badge">맛집 & 수다</span>
+                    <span class="card-badge" data-i18n="card3Badge">맛집 & 수다</span>
                 </div>
 
                 <!-- Card 4 -->
@@ -1115,36 +1127,25 @@
                         <i data-lucide="compass" style="width: 28px; height: 28px;"></i>
                     </div>
                     <div>
-                        <h3 class="card-title">처음 상륙 작전</h3>
-                        <p class="card-desc">따릉이가 어색한 초보자도 안심하고 안전하게 즐기는 드넓은 평지 코스</p>
+                        <h3 class="card-title" data-i18n="card4Title">처음 상륙 작전</h3>
+                        <p class="card-desc" data-i18n="card4Desc">따릉이가 어색한 초보자도 안심하고 안전하게 즐기는 드넓은 평지 코스</p>
                     </div>
-                    <span class="card-badge">왕초보 안전</span>
+                    <span class="card-badge" data-i18n="card4Badge">왕초보 안전</span>
                 </div>
             </div>
 
             <!-- Dynamic Detail Container -->
             <div id="course-detail" class="course-detail-container">
-                <!-- Dynamic Header injected via Javascript -->
-                <div class="detail-header" id="detail-header-target">
-                    <!-- Title & description -->
-                </div>
-                
+                <div class="detail-header" id="detail-header-target"></div>
                 <div class="detail-body">
-                    <!-- Left: Interactive Route Graph -->
                     <div class="route-visual-container">
-                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--hangang-blue-dark); margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="map-pin" style="color: var(--hangang-blue);"></i>
-                            주요 랜드마크 추천 경로
+                            <span data-i18n="routeTitle">주요 랜드마크 추천 경로</span>
                         </h3>
-                        <div class="route-map-mock" id="route-steps-target">
-                            <!-- Dynamic steps injected via Javascript -->
-                        </div>
+                        <div class="route-map-mock" id="route-steps-target"></div>
                     </div>
-
-                    <!-- Right: Dynamic Specific Tips & Curation details -->
-                    <div class="route-info-cards" id="route-info-target">
-                        <!-- Dynamic Info blocks injected via Javascript -->
-                    </div>
+                    <div class="route-info-cards" id="route-info-target"></div>
                 </div>
             </div>
         </div>
@@ -1154,61 +1155,55 @@
     <!-- ==========================================
        3. HIDDEN SPOTS GALLERY (히든 스팟 & 포토존)
        ========================================== -->
-    <section class="spots">
+    <section class="spots reveal">
         <div class="container">
-            <span class="section-tag">포토존 아카이브</span>
-            <h2 class="section-title">잠시 자전거를 세우고, 카메라를 켜보세요</h2>
-            <p class="section-desc">달리는 즐거움도 크지만, 잊지 못할 한 장을 가슴에 품어갈 수 있는 한강의 소중한 뷰 포인트를 선별했습니다.</p>
+            <span class="section-tag" data-i18n="tagSpots">포토존 아카이브</span>
+            <h2 class="section-title" data-i18n="titleSpots">잠시 자전거를 세우고, 카메라를 켜보세요</h2>
+            <p class="section-desc" data-i18n="descSpots">달리는 즐거움도 크지만, 잊지 못할 한 장을 가슴에 품어갈 수 있는 한강의 소중한 뷰 포인트를 선별했습니다.</p>
             
-            <!-- Grid Gallery layout -->
             <div class="spots-grid">
-                <!-- Spot 1 (Large) -->
                 <div class="spot-card large">
                     <div class="spot-bg spot-1"></div>
                     <div class="spot-info">
-                        <span class="spot-tag">윤슬 명당</span>
-                        <h3 class="spot-title">동작대교 남단 하부</h3>
-                        <p class="spot-desc">오후 5시 반, 오렌지빛 금가루를 강물 가득 흩뿌려주는 명실상부한 한강 윤슬 1등 포토존입니다.</p>
+                        <span class="spot-tag" data-i18n="spot1Tag">윤슬 명당</span>
+                        <h3 class="spot-title" data-i18n="spot1Title">동작대교 남단 하부</h3>
+                        <p class="spot-desc" data-i18n="spot1Desc">오후 5시 반, 오렌지빛 금가루를 강물 가득 흩뿌려주는 명실상부한 한강 윤슬 1등 포토존입니다.</p>
                     </div>
                 </div>
 
-                <!-- Spot 2 (Medium) -->
                 <div class="spot-card medium">
                     <div class="spot-bg spot-2"></div>
                     <div class="spot-info">
-                        <span class="spot-tag">다리 밑 뷰포트</span>
-                        <h3 class="spot-title">서강대교 남단 버드나무숲</h3>
-                        <p class="spot-desc">철새도래지와 강물이 자아내는 원초적인 싱그러움을 교량 대칭 구조와 함께 수직으로 담아보세요.</p>
+                        <span class="spot-tag" data-i18n="spot2Tag">다리 밑 뷰포트</span>
+                        <h3 class="spot-title" data-i18n="spot2Title">서강대교 남단 버드나무숲</h3>
+                        <p class="spot-desc" data-i18n="spot2Desc">철새도래지와 강물이 자아내는 원초적인 싱그러움을 교량 대칭 구조와 함께 수직으로 담아보세요.</p>
                     </div>
                 </div>
 
-                <!-- Spot 3 (Medium) -->
                 <div class="spot-card medium">
                     <div class="spot-bg spot-3"></div>
                     <div class="spot-info">
-                        <span class="spot-tag">도시의 노을</span>
-                        <h3 class="spot-title">반포 무지개 분수대 옆 언덕</h3>
-                        <p class="spot-desc">자전거를 나란히 눕혀놓고 멀리 서서 한강 무지개 분수와 남산타워를 한 컷에 가득 채우기 좋은 스팟.</p>
+                        <span class="spot-tag" data-i18n="spot3Tag">도시의 노을</span>
+                        <h3 class="spot-title" data-i18n="spot3Title">반포 무지개 분수대 옆 언덕</h3>
+                        <p class="spot-desc" data-i18n="spot3Desc">자전거를 나란히 눕혀놓고 멀리 서서 한강 무지개 분수와 남산타워를 한 컷에 가득 채우기 좋은 스팟.</p>
                     </div>
                 </div>
 
-                <!-- Spot 4 (Small) -->
                 <div class="spot-card small">
                     <div class="spot-bg spot-4"></div>
                     <div class="spot-info">
-                        <span class="spot-tag">싱그러운 숲길</span>
-                        <h3 class="spot-title">여의도 샛강 생태공원 인도교</h3>
-                        <p class="spot-desc">자전거 길 바로 옆에 있어 잠시 내리막에 세워두고 울창한 아열대 감성의 초록 정취를 담기 제격인 보물 같은 길입니다.</p>
+                        <span class="spot-tag" data-i18n="spot4Tag">싱그러운 숲길</span>
+                        <h3 class="spot-title" data-i18n="spot4Title">여의도 샛강 생태공원 인도교</h3>
+                        <p class="spot-desc" data-i18n="spot4Desc">자전거 길 바로 옆에 있어 잠시 내리막에 세워두고 울창한 아열대 감성의 초록 정취를 담기 제격인 보물 같은 길입니다.</p>
                     </div>
                 </div>
 
-                <!-- Spot 5 (Small) -->
                 <div class="spot-card small">
                     <div class="spot-bg spot-5"></div>
                     <div class="spot-info">
-                        <span class="spot-tag">도시 야경</span>
-                        <h3 class="spot-title">성수대교 하부 북단 쉼터</h3>
-                        <p class="spot-desc">어둠이 내려앉을 무렵 기하학적으로 빛나는 붉은 성수대교 불빛이 강 표면에 번져 몽환적인 화보 같은 야경이 연출됩니다.</p>
+                        <span class="spot-tag" data-i18n="spot5Tag">도시 야경</span>
+                        <h3 class="spot-title" data-i18n="spot5Title">성수대교 하부 북단 쉼터</h3>
+                        <p class="spot-desc" data-i18n="spot5Desc">어둠이 내려앉을 무렵 기하학적으로 빛나는 붉은 성수대교 불빛이 강 표면에 번져 몽환적인 화보 같은 야경이 연출됩니다.</p>
                     </div>
                 </div>
             </div>
@@ -1219,25 +1214,24 @@
     <!-- ==========================================
        4. TIPS & INFORMATION (실속 꿀팁 가이드)
        ========================================== -->
-    <section id="tips" class="tips">
+    <section id="tips" class="tips reveal">
         <div class="container">
-            <span class="section-tag">실속 정보와 지능형 타이밍</span>
-            <h2 class="section-title">출발 전, 이것만 알면 완벽해요</h2>
-            <p class="section-desc">초보자는 잘 모르는 대여 정류장 팁부터 오늘의 기상 조건에 반응하는 나만의 라이딩 지수를 계산해보세요.</p>
+            <span class="section-tag" data-i18n="tagTips">실속 정보와 지능형 타이밍</span>
+            <h2 class="section-title" data-i18n="titleTips">출발 전, 이것만 알면 완벽해요</h2>
+            <p class="section-desc" data-i18n="descTips">초보자는 잘 모르는 대여 정류장 팁부터 오늘의 기상 조건에 반응하는 나만의 라이딩 지수를 계산해보세요.</p>
 
             <div class="tips-container">
-                <!-- Accordions on Left -->
                 <div class="tips-left">
                     <!-- Tip 1 -->
                     <div class="tip-accordion-item active" onclick="toggleAccordion(this)">
                         <div class="tip-accordion-header">
                             <div class="tip-accordion-icon-box">
                                 <i data-lucide="navigation-2" style="color: var(--soft-mint); width: 22px; height: 22px;"></i>
-                                <span>반납/대여 수월한 '명당 정류장'</span>
+                                <span data-i18n="tip1Header">반납/대여 수월한 '명당 정류장'</span>
                             </div>
                             <i data-lucide="chevron-down" class="tip-accordion-chevron" style="width: 20px; height: 20px;"></i>
                         </div>
-                        <div class="tip-accordion-content">
+                        <div class="tip-accordion-content" data-i18n="tip1Content">
                             여의나루역 및 여의도 한강공원 바로 앞 정류장은 주말에 극도로 붐벼 대여와 반납이 엄청나게 까다롭습니다. <strong>대여 시 샛강역이나 여의도동 주민센터 정류장</strong>을 애용하시면 훨씬 여유롭고 대수가 넉넉한 따릉이를 손쉽게 획득하실 수 있습니다. 반대로, 반납 시에도 주요 지하철 한 블록 이전 정류장을 사전에 노려보세요!
                         </div>
                     </div>
@@ -1247,11 +1241,11 @@
                         <div class="tip-accordion-header">
                             <div class="tip-accordion-icon-box">
                                 <i data-lucide="shield-check" style="color: var(--soft-mint); width: 22px; height: 22px;"></i>
-                                <span>자전거 도로 안전 핵심 수칙</span>
+                                <span data-i18n="tip2Header">자전거 도로 안전 핵심 수칙</span>
                             </div>
                             <i data-lucide="chevron-down" class="tip-accordion-chevron" style="width: 20px; height: 20px;"></i>
                         </div>
-                        <div class="tip-accordion-content">
+                        <div class="tip-accordion-content" data-i18n="tip2Content">
                             한강 자전거 도로는 엄연히 통행방향이 구분되어 있으며 우측 통행이 철칙입니다. 추월을 시도할 때는 항상 좌측 공간을 활용하고 <strong>"추월하겠습니다!"</strong> 혹은 벨을 한 번 맑게 가볍게 울려 사전에 알려주시는 것이 매너입니다. 또한 이어폰 장착 시 뒤에서 다가오는 따릉이나 고속 로드자전거의 접근 소리를 듣지 못해 매우 위험하오니 스피커나 가벼운 골전도 헤드셋 사용을 부탁드립니다!
                         </div>
                     </div>
@@ -1261,52 +1255,48 @@
                         <div class="tip-accordion-header">
                             <div class="tip-accordion-icon-box">
                                 <i data-lucide="help-circle" style="color: var(--soft-mint); width: 22px; height: 22px;"></i>
-                                <span>기어 변속 및 자전거 사전 자가 점검</span>
+                                <span data-i18n="tip3Header">기어 변속 및 자전거 사전 자가 점검</span>
                             </div>
                             <i data-lucide="chevron-down" class="tip-accordion-chevron" style="width: 20px; height: 20px;"></i>
                         </div>
-                        <div class="tip-accordion-content">
+                        <div class="tip-accordion-content" data-i18n="tip3Content">
                             대여 전 반드시 안장 뒤 레버가 튼튼하게 작동하는지 고정력을 점검하시고, <strong>체인의 녹 여부와 타이어 공기압(손으로 눌렀을 때 단단한 느낌이 드는지)</strong>을 체크하세요. 기어 변속(오른쪽 손잡이)은 페달을 약하게 계속 굴려 가고 있는 상황에서 작동해야 고장 나지 않고 부드럽게 기어가 변경되어 한강 오르막 구간을 쉽게 등반할 수 있게 돕습니다.
                         </div>
                     </div>
                 </div>
 
-                <!-- Timing Calculator Widget on Right -->
+                <!-- Timing Calculator Widget -->
                 <div class="calculator-widget">
                     <h3 class="widget-title">
                         <i data-lucide="sliders-horizontal" style="color: var(--hangang-blue); width: 24px; height: 24px;"></i>
-                        실시간 최적 라이딩 계산기
+                        <span data-i18n="calcTitle">실시간 최적 라이딩 계산기</span>
                     </h3>
-                    <p class="widget-desc">현재 기온과 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.</p>
+                    <p class="widget-desc" data-i18n="calcDesc">현재 기온과 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.</p>
                     
-                    <!-- Temp Slider -->
                     <div class="control-group">
                         <div class="control-label-wrapper">
-                            <span class="control-label">현재 기온 (℃)</span>
+                            <span class="control-label" data-i18n="labelTemp">현재 기온 (℃)</span>
                             <span class="control-value" id="temp-val">22℃</span>
                         </div>
                         <input type="range" min="0" max="40" value="22" class="slider-input" id="temp-slider" oninput="calculateRidingScore()">
                     </div>
 
-                    <!-- Dust Slider -->
                     <div class="control-group">
                         <div class="control-label-wrapper">
-                            <span class="control-label">초미세먼지 (㎍/㎥)</span>
-                            <span class="control-value" id="dust-val">15 ㎍/㎥ (좋음)</span>
+                            <span class="control-label" data-i18n="labelDust">초미세먼지 (㎍/㎥)</span>
+                            <span class="control-value" id="dust-val">15 ㎍/㎥</span>
                         </div>
                         <input type="range" min="0" max="150" value="15" class="slider-input" id="dust-slider" oninput="calculateRidingScore()">
                     </div>
 
-                    <!-- Wind Slider -->
                     <div class="control-group">
                         <div class="control-label-wrapper">
-                            <span class="control-label">강바람 세기 (m/s)</span>
-                            <span class="control-value" id="wind-val">2.5 m/s (산들바람)</span>
+                            <span class="control-label" data-i18n="labelWind">강바람 세기 (m/s)</span>
+                            <span class="control-value" id="wind-val">2.5 m/s</span>
                         </div>
                         <input type="range" min="0" max="15" value="3" class="slider-input" id="wind-slider" oninput="calculateRidingScore()">
                     </div>
 
-                    <!-- Calculated Output Box -->
                     <div class="score-output-box" id="score-box">
                         <div class="score-ring" id="score-ring-val">95</div>
                         <div class="score-explanation">
@@ -1321,7 +1311,7 @@
 
 
     <!-- ==========================================
-       5. FOOTER & CLOSING (푸터 및 감성 마무리)
+       5. FOOTER & CLOSING
        ========================================== -->
     <footer class="footer">
         <div class="container">
@@ -1329,25 +1319,25 @@
                 <div class="footer-logo">
                     <i data-lucide="bike" style="width: 32px; height: 32px;"></i>
                 </div>
-                <h2 class="footer-tagline">"당신의 오늘 하루가 따릉이와 함께<br>조금 더 여유롭길"</h2>
-                <p class="footer-desc">
+                <h2 class="footer-tagline" data-i18n="footerTagline">"당신의 오늘 하루가 따릉이와 함께<br>조금 더 여유롭길"</h2>
+                <p class="footer-desc" data-i18n="footerDesc">
                     바쁜 일상의 속도를 늦추고, 자전거 안장 위에 앉아야 비로소 보이는 풍경들이 있습니다. 뺨을 부드럽게 스치는 강바람과 서서히 흩어지는 붉은 노을의 여운을 타고, 서울의 새로운 매력을 고스란히 마음속 깊은 곳에 축적해 보세요.
                 </p>
                 <div class="outlinks-container">
                     <a href="https://www.bikeseoul.com/" target="_blank" rel="noopener noreferrer" class="btn-link highlight">
-                        따릉이 공식 사이트
+                        <span data-i18n="linkOfficial">따릉이 공식 사이트</span>
                         <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
                     </a>
                     <a href="https://apps.apple.com/kr/app/%EC%84%9C%EC%9A%B8%EC%9E%90%EC%A0%84%EA%B1%B0-%EB%94%B0%EB%A6%89%EC%9D%B4/id1041151624" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        iOS 앱 설치하기
+                        <span>iOS App</span>
                         <i data-lucide="smartphone" style="width: 16px; height: 16px;"></i>
                     </a>
                     <a href="https://play.google.com/store/apps/details?id=com.conbus.bikeseoul&hl=ko" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        안드로이드 앱 설치하기
+                        <span>Android App</span>
                         <i data-lucide="play" style="width: 16px; height: 16px;"></i>
                     </a>
                 </div>
-                <p class="copyright">
+                <p class="copyright" data-i18n="copyright">
                     © 2026 한강 따릉이 감성 가이드북. 모든 서울 라이더들의 여유로운 질주를 응원합니다.
                 </p>
             </div>
@@ -1356,262 +1346,385 @@
 
 
     <!-- ==========================================
-       JAVASCRIPT FOR DYNAMIC CURATION AND CALCULATOR
+       JAVASCRIPT DYNAMIC LOGIC
        ========================================== -->
     <script>
-        // Course database to dynamically swap detail section depending on selection
+        let currentLang = 'ko';
+
+        // 다국어 번역 딕셔너리
+        const i18n = {
+            ko: {
+                heroTag: "바람을 따라 만나는 서울",
+                heroDesc: "오늘 하루, 한강의 시원한 강바람 속을 달려볼까요? 연인과의 로맨틱한 노을 데이트부터 바쁜 나날 속 지친 영혼을 달래줄 나홀로 힐링 자전거 여정까지 당신의 최적 경로를 맞춤형으로 큐레이션해 드립니다.",
+                startGuide: "가이드 시작하기",
+                checkIndex: "라이딩 적합도 확인",
+                scrollExplore: "스크롤하여 탐색하기",
+                tagCuration: "상황별 맞춤 가이드",
+                titleCuration: "오늘, 누구와 함께 한강을 달리시나요?",
+                descCuration: "원하시는 라이딩 분위기를 선택하세요. 최상의 경로와 함께 세심한 동반 팁을 친근하게 속삭여 드릴게요.",
+                card1Title: "로맨틱 한강", card1Desc: "연인과 함께 노을을 품으며 달리는 황홀한 데이트 최적화 경로", card1Badge: "노을 & 야경",
+                card2Title: "나홀로 힐링", card2Desc: "소란함 속에서 벗어나 한적하고 고요히 자아를 만나는 숨은 사색 코스", card2Badge: "조용한 힐링",
+                card3Title: "친구와 피크닉", card3Desc: "한강 배달존 명소와 연계해 웃음 가득한 여유를 나눌 수 있는 코스", card3Badge: "맛집 & 수다",
+                card4Title: "처음 상륙 작전", card4Desc: "따릉이가 어색한 초보자도 안심하고 안전하게 즐기는 드넓은 평지 코스", card4Badge: "왕초보 안전",
+                routeTitle: "주요 랜드마크 추천 경로",
+                tagSpots: "포토존 아카이브", titleSpots: "잠시 자전거를 세우고, 카메라를 켜보세요", descSpots: "달리는 즐거움도 크지만, 잊지 못할 한 장을 가슴에 품어갈 수 있는 한강의 소중한 뷰 포인트를 선별했습니다.",
+                spot1Tag: "윤슬 명당", spot1Title: "동작대교 남단 하부", spot1Desc: "오후 5시 반, 오렌지빛 금가루를 강물 가득 흩뿌려주는 명실상부한 한강 윤슬 1등 포토존입니다.",
+                spot2Tag: "다리 밑 뷰포트", spot2Title: "서강대교 남단 버드나무숲", spot2Desc: "철새도래지와 강물이 자아내는 원초적인 싱그러움을 교량 대칭 구조와 함께 수직으로 담아보세요.",
+                spot3Tag: "도시의 노을", spot3Title: "반포 무지개 분수대 옆 언덕", spot3Desc: "자전거를 나란히 눕혀놓고 멀리 서서 한강 무지개 분수와 남산타워를 한 컷에 가득 채우기 좋은 스팟.",
+                spot4Tag: "싱그러운 숲길", spot4Title: "여의도 샛강 생태공원 인도교", spot4Desc: "자전거 길 바로 옆에 있어 잠시 내리막에 세워두고 울창한 아열대 감성의 초록 정취를 담기 제격인 보물 같은 길입니다.",
+                spot5Tag: "도시 야경", spot5Title: "성수대교 하부 북단 쉼터", spot5Desc: "어둠이 내려앉을 무렵 기하학적으로 빛나는 붉은 성수대교 불빛이 강 표면에 번져 몽환적인 화보 같은 야경이 연출됩니다.",
+                tagTips: "실속 정보와 지능형 타이밍", titleTips: "출발 전, 이것만 알면 완벽해요", descTips: "초보자는 잘 모르는 대여 정류장 팁부터 오늘의 기상 조건에 반응하는 나만의 라이딩 지수를 계산해보세요.",
+                tip1Header: "반납/대여 수월한 '명당 정류장'", tip1Content: "여의나루역 및 여의도 한강공원 바로 앞 정류장은 주말에 극도로 붐벼 대여와 반납이 엄청나게 까다롭습니다. 대여 시 샛강역이나 여의도동 주민센터 정류장을 애용하시면 훨씬 여유롭고 대수가 넉넉한 따릉이를 손쉽게 획득하실 수 있습니다.",
+                tip2Header: "자전거 도로 안전 핵심 수칙", tip2Content: "한강 자전거 도로는 엄연히 통행방향이 구분되어 있으며 우측 통행이 철칙입니다. 추월을 시도할 때는 항상 좌측 공간을 활용하고 '추월하겠습니다!' 혹은 벨을 벨을 가볍게 울려주세요.",
+                tip3Header: "기어 변속 및 자전거 사전 자가 점검", tip3Content: "대여 전 반드시 안장 뒤 레버가 튼튼하게 작동하는지 고정력을 점검하시고, 체인의 녹 여부와 타이어 공기압을 체크하세요.",
+                calcTitle: "실시간 최적 라이딩 계산기", calcDesc: "현재 기온과 미세먼지 수치를 맞추시면, 오늘의 실질적인 따릉이 라이딩 쾌적 지수를 연산해 드립니다.",
+                labelTemp: "현재 기온 (℃)", labelDust: "초미세먼지 (㎍/㎥)", labelWind: "강바람 세기 (m/s)",
+                footerTagline: "\"당신의 오늘 하루가 따릉이와 함께<br>조금 더 여유롭길\"",
+                footerDesc: "바쁜 일상의 속도를 늦추고, 자전거 안장 위에 앉아야 비로소 보이는 풍경들이 있습니다. 뺨을 부드럽게 스치는 강바람과 서서히 흩어지는 붉은 노을의 여운을 타고, 서울의 새로운 매력을 고스란히 마음속 깊은 곳에 축적해 보세요.",
+                linkOfficial: "따릉이 공식 사이트", copyright: "© 2026 한강 따릉이 감성 가이드북. 모든 서울 라이더들의 여유로운 질주를 응원합니다.",
+                timeStr: "시간", distStr: "거리", diffStr: "난이도", routeSub: "한강을 완벽히 흡수하는 전용 큐레이션 경로"
+            },
+            en: {
+                heroTag: "Follow the breeze, Discover Seoul",
+                heroDesc: "Shall we ride through the refreshing river breeze of Han River today? From romantic sunset dates to peaceful solo healing journeys, we curate the perfect path precisely for you.",
+                startGuide: "Start Guide",
+                checkIndex: "Check Riding Index",
+                scrollExplore: "Scroll to Explore",
+                tagCuration: "Tailored Curation",
+                titleCuration: "Who are you riding with today?",
+                descCuration: "Select your desired riding vibe. We'll whisper the finest routes and detailed companion tips just for you.",
+                card1Title: "Romantic Han River", card1Desc: "Sunset date course perfect for couples watching the magnificent crimson sky.", card1Badge: "Sunset & Night View",
+                card2Title: "Solo Healing", card2Desc: "A quiet, secluded path to escape the crowd and encounter your inner self.", card2Badge: "Silent Healing",
+                card3Title: "Picnic with Friends", card3Desc: "A joyful course linked with famous riverside food delivery zones.", card3Badge: "Food & Chat",
+                card4Title: "First Time Rider", card4Desc: "A safe, spacious flat course tailored for absolute beginners.", card4Badge: "Beginner Safe",
+                routeTitle: "Recommended Landmark Path",
+                tagSpots: "Photo Spots Archive", titleSpots: "Stop your bike, turn on your camera", descSpots: "Riding is fun, but we've selected precious Han River viewpoints where you can capture unforgettable memories.",
+                spot1Tag: "Sparkling Water", spot1Title: "Under Dongjak Bridge (South)", spot1Desc: "At 5:30 PM, this is the absolute best spot where golden sunlight sparkles all over the river.",
+                spot2Tag: "Under-Bridge View", spot2Title: "Seogang Bridge Willow Forest", spot2Desc: "Capture pristine greenery and migratory bird sanctuaries framed symmetrically by the bridge structures.",
+                spot3Tag: "City Sunset", spot3Title: "Banpo Rainbow Fountain Hill", spot3Desc: "Lay down your bikes side by side and snap a frame capturing both the fountain and Namsan Tower.",
+                spot4Tag: "Fresh Forest Path", spot4Title: "Yeouido Saetgang Ecological Bridge", spot4Desc: "A hidden gem right next to the bike road, featuring dense, tropical-vibe green scenery.",
+                spot5Tag: "City Nightscape", spot5Title: "Under Seongsu Bridge (North)", spot5Desc: "As night falls, the geometric red lighting of the bridge reflects beautifully on the water surface.",
+                tagTips: "Practical Info & Intelligent Timing", titleTips: "Essential Tips Before You Go", descTips: "From secret rental spots to custom weather indices, check these smart guidelines before setting off.",
+                tip1Header: "Smart Rental & Return Hotspots", tip1Content: "Stations right outside Yeouinaru Station get intensely crowded on weekends. Try using Saetgang Station or Yeouido-dong Community Center stations for a much smoother rental experience.",
+                tip2Header: "Core Bike Road Safety Rules", tip2Content: "Han River bike lanes strictly require keeping to the right side. When overtaking, always use the left lane and announce it out loud or ring your bell lightly.",
+                tip3Header: "Gear Shifting & Self Checkups", tip3Content: "Always check saddle lock tighteness, chain rust, and tire pressure before renting. Shift gears only while gently pedaling to prevent transmission damage.",
+                calcTitle: "Real-time Riding Calculator", calcDesc: "Input the current temperature and dust level to calculate today's practical comfort score.",
+                labelTemp: "Temperature (℃)", labelDust: "Fine Dust (㎍/㎥)", labelWind: "Wind Speed (m/s)",
+                footerTagline: "\"May your day be a little more relaxed<br>with Ttareungi\"",
+                footerDesc: "Slowing down your pace reveals views that can only be captured from a bicycle saddle. Accumulate Seoul's vibrant charm deep within your heart with the sweet river wind.",
+                linkOfficial: "Official Website", copyright: "© 2026 Han River Guidebook. Supporting every rider's peaceful journey.",
+                timeStr: "Time", distStr: "Distance", diffStr: "Difficulty", routeSub: "Dedicated curation route absorbing the essence of Han River"
+            }
+        };
+
         const courseDatabase = {
             1: {
-                title: "로맨틱 한강: 연인의 빛나는 노을 투어",
-                duration: "약 50분",
+                title: { ko: "로맨틱 한강: 연인의 빛나는 노을 투어", en: "Romantic Han River: Lovers' Sunset Tour" },
+                duration: { ko: "약 50분", en: "Approx. 50 mins" },
                 distance: "7.5 km",
-                difficulty: "쉬움",
-                themeColor: "#ffe4e6",
-                textColor: "#e11d48",
+                difficulty: { ko: "쉬움", en: "Easy" },
                 path: [
-                    { name: "반포 한강공원 정거장", desc: "분수대 바로 우측, 연인들의 쾌적한 보행 동선에서 따릉이를 선택 대여합니다." },
-                    { name: "세빛섬 테라스타운", desc: "해질녘 불빛이 찬란히 켜지는 랜드마크에서 잠시 도보 이동하며 노을을 조망합니다." },
-                    { name: "동작대교 노을카페 하부", desc: "가장 아름다운 붉은 빛이 낙조를 그리며 연인들의 로맨틱 포인트를 점정합니다." },
-                    { name: "이촌 한강공원 보리밭길", desc: "가로등이 은은히 켜지는 한적한 산책로를 가로지르며 잔잔하게 마무리합니다." }
+                    { name: { ko: "반포 한강공원 정거장", en: "Banpo Hangang Park Station" }, desc: { ko: "분수대 우측, 연인들의 쾌적한 보행 동선에서 대여합니다.", en: "Rent comfortably right next to the famous fountain." } },
+                    { name: { ko: "세빛섬 테라스타운", en: "Some Sevit Island" }, desc: { ko: "해질녘 불빛이 찬란히 켜지는 랜드마크를 조망합니다.", en: "Enjoy the glowing architectural landmark as dusk falls." } },
+                    { name: { ko: "동작대교 노을카페 하부", en: "Under Dongjak Bridge Cafe" }, desc: { ko: "가장 아름다운 낙조를 그리며 로맨틱 포인트를 점정합니다.", en: "The most beautiful sunset spot that spices up romance." } },
+                    { name: { ko: "이촌 한강공원 보리밭길", en: "Ichon Hangang Barley Field" }, desc: { ko: "가로등이 은은히 켜지는 한적한 산책로로 마무리합니다.", en: "Conclude gently through a peaceful, dimly-lit path." } }
                 ],
                 tips: [
-                    { title: "로맨틱 연출 타이밍 팁", text: "해질녘 시간 (오후 5시 반~6시 반 사이)에 맞춰 코스를 완주하세요. 세빛섬의 조명이 들어올 때의 색감이 가장 로맨틱합니다." },
-                    { title: "안전 가이드", text: "반포지구는 보행자가 매우 많으니 속도를 제어하고 서로의 보폭을 맞춰 평온히 달리는 편이 좋습니다." }
+                    { title: { ko: "로맨틱 연출 타이밍 팁", en: "Romantic Timing Tip" }, text: { ko: "오후 5시 반~6시 반 사이 노을 시간에 맞춰 코스를 완주하세요.", en: "Complete the course between 5:30 PM and 6:30 PM for maximum sunset colors." } },
+                    { title: { ko: "안전 가이드", en: "Safety Guide" }, text: { ko: "반포지구는 보행자가 매우 많으니 속도를 꼭 제어해 주세요.", en: "Banpo area is highly crowded with pedestrians; keep your speed low." } }
                 ]
             },
             2: {
-                title: "나홀로 힐링: 머리를 비우는 사색의 샛길",
-                duration: "약 1시간 15분",
+                title: { ko: "나홀로 힐링: 머리를 비우는 사색의 샛길", en: "Solo Healing: Secluded Contemplation Path" },
+                duration: { ko: "약 1시간 15분", en: "Approx. 1 hr 15 mins" },
                 distance: "11.2 km",
-                difficulty: "보통",
-                themeColor: "#e0f2fe",
-                textColor: "#0284c7",
+                difficulty: { ko: "보통", en: "Moderate" },
                 path: [
-                    { name: "망원 한강공원 초입", desc: "망원 정거장에서 대여해 가벼운 마음으로 강물의 흐름을 마주하고 페달을 밟습니다." },
-                    { name: "난지 생태습지원 길", desc: "대규모 휴양객이 없어 자연 고요함과 바람의 속삭임 소리만 귀에 청명히 박힙니다." },
-                    { name: "하늘공원 메타세콰이어길 하부", desc: "쭉 뻗은 숲의 한가운데서 자전거를 멈추고 고독이 선사하는 편안함을 음미합니다." },
-                    { name: "가양대교 남단 수변 쉼터", desc: "탁 트인 조용한 벤치에 앉아 강 너머로 멀어져 가는 도시의 고층빌딩을 바라봅니다." }
+                    { name: { ko: "망원 한강공원 초입", en: "Mangwon Hangang Park Entrance" }, desc: { ko: "망원 정거장에서 대여해 가벼운 마음으로 출발합니다.", en: "Rent at Mangwon and set off facing the flowing river." } },
+                    { name: { ko: "난지 생태습지원 길", en: "Nanji Eco Wetland Path" }, desc: { ko: "대규모 휴양객이 없어 고요히 바람 소리를 즐기기 좋습니다.", en: "Devoid of crowds, perfect for listening to nature's whisper." } },
+                    { name: { ko: "하늘공원 메타세콰이어길", en: "Haneul Park Metasequoia Path" }, desc: { ko: "쭉 뻗은 숲의 한가운데서 고독이 선사하는 편안함을 음미합니다.", en: "Savor the absolute comfort of solitude amidst towering trees." } },
+                    { name: { ko: "가양대교 남단 수변 쉼터", en: "Gayang Bridge Waterfront Rest Area" }, desc: { ko: "탁 트인 조용한 벤치에서 강 너머 도시를 바라봅니다.", en: "Stare across the river toward the city from a peaceful bench." } }
                 ],
                 tips: [
-                    { title: "고독한 라이더의 편의점 간식", text: "망원지구 편의점에서 따뜻한 커피 한 잔 혹은 레몬 탄산수를 사서 자전거 보틀 홀더에 소지하고 출발하세요." },
-                    { title: "소음 차단 수칙", text: "이어폰은 지양하고 주위 자연의 바람 소리, 나무 부딪히는 자연 음향에 집중하는 것을 권장합니다." }
+                    { title: { ko: "라이더의 간식 팁", en: "Rider's Snack Tip" }, text: { ko: "따뜻한 커피나 음료수를 사서 보틀 홀더에 소지하고 출발하세요.", en: "Grab a warm coffee or beverage and store it in your bottle holder." } },
+                    { title: { ko: "소음 차단 수칙", en: "Noise Control Rule" }, text: { ko: "이어폰은 지양하고 주위 자연의 소리에 귀 기울여 보세요.", en: "Ditch earphones and fully tune into the surrounding wind and waves." } }
                 ]
             },
             3: {
-                title: "친구와 피크닉: 자전거 씽씽 먹방 투어",
-                duration: "약 40분",
+                title: { ko: "친구와 피크닉: 자전거 씽씽 먹방 투어", en: "Picnic with Friends: Riding & Mukbang Tour" },
+                duration: { ko: "약 40분", en: "Approx. 40 mins" },
                 distance: "5.8 km",
-                difficulty: "쉬움",
-                themeColor: "#fef3c7",
-                textColor: "#d97706",
+                difficulty: { ko: "쉬움", en: "Easy" },
                 path: [
-                    { name: "여의도 국회의사당역 정거장", desc: "한적한 역 사거리 뒤편 정거장에서 친구들과 모여 따릉이를 점검 후 출발합니다." },
-                    { name: "샛강 생태공원 초록 터널", desc: "초록 우거진 가로수 아래에서 시원한 바람을 마시며 속도를 높여 즐겁게 달립니다." },
-                    { name: "여의도 배달존 2호", desc: "사전에 픽업을 준비한 맛있는 치킨 혹은 피자를 배달존에서 만나 자전거 바구니에 고정합니다." },
-                    { name: "마포대교 아래 피크닉 평원", desc: "돗자리를 펴고 서로의 자전거를 뒤에 든든히 기댄 채 강바람을 곁들인 수다 타임을 가집니다." }
+                    { name: { ko: "여의도 국회의사당역 정거장", en: "Assembly Station Station" }, desc: { ko: "한적한 역 뒤편 정거장에서 친구들과 안전 점검 후 출발합니다.", en: "Gather up at a quiet station behind the National Assembly." } },
+                    { name: { ko: "샛강 생태공원 초록 터널", en: "Saetgang Green Tunnel" }, desc: { ko: "우거진 가로수 아래에서 시원한 바람을 마시며 달립니다.", en: "Speed smoothly under dense green canopies with a fresh breeze." } },
+                    { name: { ko: "여의도 배달존 2호", en: "Yeouido Delivery Zone No.2" }, desc: { ko: "주문한 음식을 배달존에서 픽업해 바구니에 고정합니다.", en: "Pick up your ordered food and secure it safely inside the front basket." } },
+                    { name: { ko: "마포대교 아래 피크닉 평원", en: "Picnic Fields Under Mapo Bridge" }, desc: { ko: "돗자리를 펴고 강바람을 곁들인 수다 타임을 가집니다.", en: "Spread your mat and enjoy a lively chat with the river wind." } }
                 ],
                 tips: [
-                    { title: "바구니 소지량 확인", text: "따릉이 앞바구니는 최대 5kg 수용 한계가 있습니다. 음료수가 가득 든 무거운 배낭은 무리가 가지 않도록 메는 것이 좋습니다." },
-                    { title: "에티켓 주의사항", text: "피크닉 후 생겨난 모든 쓰레기는 꼭 한강 분리수거장에 모아 버리는 성숙한 따릉이 시민 문화를 꽃피워주세요." }
+                    { title: { ko: "바구니 소지량 확인", en: "Basket Weight Capacity" }, text: { ko: "따릉이 앞바구니는 최대 5kg 수용 한계가 있으니 주의하세요.", en: "Ttareungi baskets have a 5kg weight limit; avoid overloading." } },
+                    { title: { ko: "에티켓 주의사항", en: "Eco Etiquette Notice" }, text: { ko: "피크닉 후 발생한 쓰레기는 반드시 지정 장소에 분리수거해 주세요.", en: "Please gather all trash and drop it off at designated recycling spots." } }
                 ]
             },
             4: {
-                title: "처음 상륙 작전: 따릉이가 처음인 새싹 가이드",
-                duration: "약 30분",
+                title: { ko: "처음 상륙 작전: 따릉이가 처음인 새싹 가이드", en: "First Landing Operation: Novice Rider Guide" },
+                duration: { ko: "약 30분", en: "Approx. 30 mins" },
                 distance: "4.2 km",
-                difficulty: "매우 쉬움",
-                themeColor: "#d1fae5",
-                textColor: "#059669",
+                difficulty: { ko: "매우 쉬움", en: "Very Easy" },
                 path: [
-                    { name: "잠원 한강공원 넓은 광장 정거장", desc: "인도가 드넓고 고저차가 아예 없는 조용한 구역을 택해 대여 조작법을 익힙니다." },
-                    { name: "자전거 전용 안전 초보 훈련로", desc: "바닥 폭이 넓고 경계석 구분이 확실한 구간에서 똑바로 일직선으로 진행해 봅니다." },
-                    { name: "한남대교 아래 그늘진 벤치", desc: "바람막이 그늘 아래 평안히 숨을 가다듬으며 따릉이 안장의 높낮이를 다리에 맞춥니다." },
-                    { name: "신사들목 평탄 흙길 회귀 지점", desc: "가장 안정적인 주행으로 한강의 기운을 다치지 않고 온전히 품어내는 무사 회차 지점입니다." }
+                    { name: { ko: "잠원 한강공원 광장 정거장", en: "Jamwon Hangang Park Square Station" }, desc: { ko: "인도가 드넓고 경사가 없는 안전 구역에서 대여 조작법을 익힙니다.", en: "Practice basic maneuvers on a wide, flat, stress-free road." } },
+                    { name: { ko: "자전거 전용 안전 초보 훈련로", en: "Beginner Safety Practice Lane" }, desc: { ko: "바닥 폭이 넓고 경계석 구분이 확실한 구간에서 직진을 연습합니다.", en: "Practice going straight on safely isolated wide paths." } },
+                    { name: { ko: "한남대교 아래 그늘진 벤치", en: "Shaded Benches Under Hannam Bridge" }, desc: { ko: "그늘 아래 평안히 숨을 가다듬으며 안장 높낮이를 조절합니다.", en: "Catch your breath under the bridge shade and fine-tune saddle height." } },
+                    { name: { ko: "신사들목 평탄 흙길 회귀 지점", en: "Sinsa Access Road Safe Return Point" }, desc: { ko: "가장 안정적인 주행으로 무사히 회차하는 지점입니다.", en: "Safely wrap up your very first riding experience smoothly." } }
                 ],
                 tips: [
-                    { title: "따릉이 기어 기본 세팅", text: "대여 직후 처음 페달을 밟을 땐 변속 기어를 무조건 '1단(가장 가벼움)'으로 설정하여 균형을 안전하게 잡는 것이 유리합니다." },
-                    { title: "안장 높이 맞추는 공식", text: "자전거 안장에 걸터앉았을 때 양발 뒤꿈치가 땅에 가까스로 닿는 높이가 주행과 제동에 모두 이상적이며 관절에 이롭습니다." }
+                    { title: { ko: "기본 세팅 팁", en: "Basic Settings Tip" }, text: { ko: "처음 출발할 때는 변속 기어를 무조건 '1단'으로 설정해 균형을 잡으세요.", en: "Always set the gear shift to '1st gear' initially to grab balance easily." } },
+                    { title: { ko: "안장 높이 맞추는 공식", en: "Saddle Height Golden Formula" }, text: { ko: "안장에 앉았을 때 양발 뒤꿈치가 땅에 가까스로 닿는 높이가 관절에 이롭습니다.", en: "The height where your heels barely brush the ground is ideal for safety." } }
                 ]
             }
         };
 
-        // Handle curation card selection and state mutation
-        function selectCourse(courseId) {
-            // Remove active classes from all cards
-            document.querySelectorAll('.curation-card').forEach(card => {
-                card.classList.remove('active');
-            });
+        let selectedIdGlobal = 1;
 
-            // Set current card active
-            const selectedCard = document.querySelector(`.card-${courseId}`);
-            if (selectedCard) {
-                selectedCard.classList.add('active');
+        // 1. 다크모드 / 라이트모드 기능
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            
+            const themeIcon = document.getElementById('theme-toggle').querySelector('i');
+            if (targetTheme === 'dark') {
+                themeIcon.setAttribute('data-lucide', 'sun');
+            } else {
+                themeIcon.setAttribute('data-lucide', 'moon');
             }
+            lucide.createIcons();
+        }
 
-            // Fetch course metadata
+        // 2. 한국어 / 영어 다국어 언어 전환 기능
+        function toggleLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            document.getElementById('lang-toggle').querySelector('span').innerText = currentLang === 'ko' ? 'EN' : 'KO';
+            applyTranslations();
+            selectCourse(selectedIdGlobal);
+            calculateRidingScore();
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[currentLang][key]) {
+                    el.innerHTML = i18n[currentLang][key];
+                }
+            });
+            // 타이핑 효과 리셋 후 재생
+            startTypingEffect();
+        }
+
+        // 3. 스크롤 패럴랙스 (Parallax Effect)
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroBg = document.getElementById('hero-bg');
+            // 배경 움직임 속도를 스크롤의 40%로 늦춰 패럴랙스 구현
+            heroBg.style.transform = `translateY(${scrolled * 0.4}px)`;
+        });
+
+        // 4. 카드 3D 기울어짐 마우스 호버 효과
+        function applyCardTiltEffect() {
+            const cards = document.querySelectorAll('.curation-card, .spot-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const xc = rect.width / 2;
+                    const yc = rect.height / 2;
+                    
+                    // 최대 12도 기울어짐 연출
+                    const angleX = (yc - y) / yc * 12;
+                    const angleY = (x - xc) / xc * 12;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-5px)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+                });
+            });
+        }
+
+        // 5. 페이지 진입 / 스크롤 시 부드러운 순차 등장 연출 (Intersection Observer)
+        function applyRevealAnimation() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        // 6. 제목 타이핑 효과 (Typing Effect)
+        let typingTimer;
+        function startTypingEffect() {
+            clearTimeout(typingTimer);
+            const titleEl = document.getElementById('typing-title');
+            const txtKo = `가장 완벽하고 싱그러운<br><span>한강 따릉이 가이드</span>`;
+            const txtEn = `The Most Perfect & Fresh<br><span>Han River Bike Guide</span>`;
+            const fullText = currentLang === 'ko' ? txtKo : txtEn;
+            
+            titleEl.innerHTML = '';
+            let idx = 0;
+            
+            // 태그 파싱을 고려한 부드러운 글자 드롭 연출
+            function type() {
+                if (idx < fullText.length) {
+                    if (fullText.substr(idx, 4) === '<br>') {
+                        titleEl.innerHTML += '<br>';
+                        idx += 4;
+                    } else if (fullText.substr(idx, 6) === '<span>') {
+                        titleEl.innerHTML += '<span>';
+                        idx += 6;
+                    } else if (fullText.substr(idx, 7) === '</span>') {
+                        titleEl.innerHTML += '</span>';
+                        idx += 7;
+                    } else {
+                        // 스팬 혹은 내부 태그 속에 글자를 안착시키기 위함
+                        if (titleEl.querySelector('span')) {
+                            titleEl.querySelector('span').innerHTML += fullText[idx];
+                        } else {
+                            titleEl.innerHTML += fullText[idx];
+                        }
+                        idx++;
+                    }
+                    typingTimer = setTimeout(type, 45);
+                }
+            }
+            type();
+        }
+
+        // 기존 큐레이션 코스 주입 로직 연동
+        function selectCourse(courseId) {
+            selectedIdGlobal = courseId;
+            document.querySelectorAll('.curation-card').forEach(card => card.classList.remove('active'));
+            const selectedCard = document.querySelector(`.card-${courseId}`);
+            if (selectedCard) selectedCard.classList.add('active');
+
             const course = courseDatabase[courseId];
             if (!course) return;
 
-            // Populate HTML components inside detail view dynamically
             const headerTarget = document.getElementById('detail-header-target');
             const stepsTarget = document.getElementById('route-steps-target');
             const infoTarget = document.getElementById('route-info-target');
 
-            // 1. Set Header
             headerTarget.innerHTML = `
                 <div class="detail-header-left">
-                    <div style="background-color: ${course.themeColor}; color: ${course.textColor}; padding: 10px; border-radius: 12px; display: inline-flex;">
+                    <div style="background-color: var(--soft-mint-light); color: var(--soft-mint); padding: 10px; border-radius: 12px; display: inline-flex;">
                         <i data-lucide="bike" style="width: 24px; height: 24px;"></i>
                     </div>
                     <div>
-                        <h3 class="detail-title">${course.title}</h3>
-                        <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 4px;">한강을 완벽히 흡수하는 전용 큐레이션 경로</p>
+                        <h3 class="detail-title">${course.title[currentLang]}</h3>
+                        <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 4px;">${i18n[currentLang].routeSub}</p>
                     </div>
                 </div>
                 <div class="detail-meta">
-                    <div class="detail-meta-item"><i data-lucide="clock" style="width: 18px; height: 18px; color: var(--soft-mint);"></i> <span>시간: <strong>${course.duration}</strong></span></div>
-                    <div class="detail-meta-item"><i data-lucide="navigation" style="width: 18px; height: 18px; color: var(--soft-mint);"></i> <span>거리: <strong>${course.distance}</strong></span></div>
-                    <div class="detail-meta-item"><i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--soft-mint);"></i> <span>난이도: <strong>${course.difficulty}</strong></span></div>
+                    <div class="detail-meta-item"><i data-lucide="clock" style="width: 18px; height: 18px; color: var(--soft-mint);"></i> <span>${i18n[currentLang].timeStr}: <strong>${course.duration[currentLang]}</strong></span></div>
+                    <div class="detail-meta-item"><i data-lucide="navigation" style="width: 18px; height: 18px; color: var(--soft-mint);"></i> <span>${i18n[currentLang].distStr}: <strong>${course.distance}</strong></span></div>
+                    <div class="detail-meta-item"><i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--soft-mint);"></i> <span>${i18n[currentLang].diffStr}: <strong>${course.difficulty[currentLang]}</strong></span></div>
                 </div>
             `;
 
-            // 2. Set Route Steps
             stepsTarget.innerHTML = course.path.map((step, index) => `
                 <div class="path-step ${index === 0 ? 'active' : ''}">
                     <div class="path-dot">${index + 1}</div>
                     <div class="path-content">
-                        <h4>${step.name}</h4>
-                        <p>${step.desc}</p>
+                        <h4>${step.name[currentLang]}</h4>
+                        <p>${step.desc[currentLang]}</p>
                     </div>
                 </div>
             `).join('');
 
-            // 3. Set Specific Tips and insights
             infoTarget.innerHTML = course.tips.map((tip, index) => `
                 <div class="info-block ${index === 0 ? 'accent' : ''}">
                     <div class="info-block-title">
                         <i data-lucide="${index === 0 ? 'sparkles' : 'alert-triangle'}" style="width: 20px; height: 20px; color: ${index === 0 ? 'var(--hangang-blue)' : 'var(--soft-mint)'};"></i>
-                        <span>${tip.title}</span>
+                        <span>${tip.title[currentLang]}</span>
                     </div>
-                    <p class="info-block-text">${tip.text}</p>
+                    <p class="info-block-text">${tip.text[currentLang]}</p>
                 </div>
             `).join('');
 
-            // Trigger visual transitions & lucide rendering
             const detailContainer = document.getElementById('course-detail');
             detailContainer.style.display = 'block';
-            setTimeout(() => {
-                detailContainer.classList.add('show');
-            }, 50);
+            setTimeout(() => { detailContainer.classList.add('show'); }, 50);
 
             lucide.createIcons();
-
-            // Smooth scroll down to course detail container
-            detailContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // Accordion functionality for help guides
         function toggleAccordion(item) {
             const isActive = item.classList.contains('active');
-            
-            // Close all items
-            document.querySelectorAll('.tip-accordion-item').forEach(acc => {
-                acc.classList.remove('active');
-            });
-
-            // If it was not active, open it
-            if (!isActive) {
-                item.classList.add('active');
-            }
+            document.querySelectorAll('.tip-accordion-item').forEach(acc => acc.classList.remove('active'));
+            if (!isActive) item.classList.add('active');
         }
 
-        // Realtime Interactive Timing Calculator Logic
+        // 실시간 날씨 연산 결과의 다국어 처리
         function calculateRidingScore() {
             const tempVal = parseFloat(document.getElementById('temp-slider').value);
             const dustVal = parseFloat(document.getElementById('dust-slider').value);
             const windVal = parseFloat(document.getElementById('wind-slider').value);
 
-            // Set UI texts corresponding to sliders
             document.getElementById('temp-val').innerText = `${tempVal}℃`;
             
-            let dustText = '';
-            if (dustVal <= 15) dustText = `${dustVal} ㎍/㎥ (좋음)`;
-            else if (dustVal <= 35) dustText = `${dustVal} ㎍/㎥ (보통)`;
-            else if (dustVal <= 75) dustText = `${dustVal} ㎍/㎥ (나쁨)`;
-            else dustText = `${dustVal} ㎍/㎥ (매우 나쁨)`;
+            let dustText = `${dustVal} ㎍/㎥`;
+            let windText = `${windVal} m/s`;
             document.getElementById('dust-val').innerText = dustText;
-
-            let windText = '';
-            if (windVal <= 1.5) windText = `${windVal} m/s (바람 없음)`;
-            else if (windVal <= 3.3) windText = `${windVal} m/s (산들바람)`;
-            else if (windVal <= 5.4) windText = `${windVal} m/s (솔솔바람)`;
-            else windText = `${windVal} m/s (돌풍 주의)`;
             document.getElementById('wind-val').innerText = windText;
 
-            // Compute actual riding comfort score out of 100
             let score = 100;
-
-            // Temp deduction
-            if (tempVal >= 18 && tempVal <= 25) {
-                // Optimal temperature range
-            } else {
-                const diff = Math.min(Math.abs(tempVal - 21.5), 20);
-                score -= diff * 1.5;
+            if (tempVal < 18 || tempVal > 25) {
+                score -= Math.min(Math.abs(tempVal - 21.5), 20) * 1.5;
             }
-
-            // Dust deduction
-            if (dustVal > 15) {
-                score -= (dustVal - 15) * 0.45;
-            }
-
-            // Wind deduction
-            if (windVal > 3.3) {
-                score -= (windVal - 3.3) * 3;
-            }
-
+            if (dustVal > 15) score -= (dustVal - 15) * 0.45;
+            if (windVal > 3.3) score -= (windVal - 3.3) * 3;
             score = Math.max(Math.min(Math.round(score), 100), 10);
 
-            // Display Score ring
             const scoreRing = document.getElementById('score-ring-val');
             scoreRing.innerText = score;
 
-            // Swap colors based on score status
             const scoreBox = document.getElementById('score-box');
             const scoreTitle = document.getElementById('score-title');
             const scoreDesc = document.getElementById('score-desc');
 
             if (score >= 85) {
                 scoreBox.style.backgroundColor = 'var(--soft-mint-light)';
-                scoreBox.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                 scoreRing.style.backgroundColor = 'var(--soft-mint)';
-                scoreTitle.innerText = '최고의 라이딩 조건!';
-                scoreTitle.style.color = '#047857';
-                scoreDesc.innerText = '환상적인 날씨입니다. 바람도 상쾌하고 호흡하기 안성맞춤인 날이군요. 당장 따릉이 정거장으로 뛰어 가셔도 완벽합니다!';
-                scoreDesc.style.color = '#065f46';
+                scoreTitle.innerText = currentLang === 'ko' ? '최고의 라이딩 조건!' : 'Perfect Riding Condition!';
+                scoreDesc.innerText = currentLang === 'ko' ? '환상적인 날씨입니다. 바람도 상쾌하고 호흡하기 안성맞춤인 날이군요!' : 'Fantastic weather. The breeze is fresh and perfectly suitable for cycling!';
             } else if (score >= 60) {
                 scoreBox.style.backgroundColor = 'var(--hangang-blue-light)';
-                scoreBox.style.borderColor = 'rgba(2, 132, 199, 0.2)';
                 scoreRing.style.backgroundColor = 'var(--hangang-blue)';
-                scoreTitle.innerText = '라이딩하기 무난해요!';
-                scoreTitle.style.color = '#0369a1';
-                scoreDesc.innerText = '가벼운 라이딩에 적절한 수준입니다. 가벼운 바람막이 겉옷이나 생수를 소지하시면 풍요로운 힐링을 충분히 완수하실 수 있습니다.';
-                scoreDesc.style.color = '#075985';
+                scoreTitle.innerText = currentLang === 'ko' ? '라이딩하기 무난해요!' : 'Fairly Good to Ride!';
+                scoreDesc.innerText = currentLang === 'ko' ? '가벼운 라이딩에 적절한 수준입니다. 가벼운 겉옷이나 생수를 소지하세요.' : 'Appropriate for a casual cruise. Bringing light outerwear or water is recommended.';
             } else {
-                scoreBox.style.backgroundColor = '#fff1f2';
-                scoreBox.style.borderColor = 'rgba(244, 63, 94, 0.2)';
+                scoreBox.style.backgroundColor = 'rgba(244, 63, 94, 0.15)';
                 scoreRing.style.backgroundColor = '#f43f5e';
-                scoreTitle.innerText = '조금 신중한 라이딩 추천';
-                scoreTitle.style.color = '#be123c';
-                scoreDesc.innerText = '미세먼지가 자욱하거나, 강추위/폭염, 혹은 강력한 역풍이 우려되는 조건입니다. 가급적 실내 대기를 하거나 마스크를 단단히 착용하고 수시로 휴식을 가질 것을 당부드립니다.';
-                scoreDesc.style.color = '#9f1239';
+                scoreTitle.innerText = currentLang === 'ko' ? '조금 신중한 라이딩 추천' : 'Caution Advised';
+                scoreDesc.innerText = currentLang === 'ko' ? '미세먼지나 강풍이 우려되는 조건입니다. 실내 대기 혹은 마스크를 권장합니다.' : 'Poor weather due to microdust or harsh winds. Indoor resting or masks recommended.';
             }
         }
 
-        // Initialize script, default load romantic course, render Lucide Icons on load
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            selectCourse(1); // Default to romantic course detail on load
-            calculateRidingScore(); // Init calculator score on load
+            applyCardTiltEffect();
+            applyRevealAnimation();
+            startTypingEffect();
+            selectCourse(1);
+            calculateRidingScore();
         });
     </script>
 </body>
